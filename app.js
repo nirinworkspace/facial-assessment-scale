@@ -1,80 +1,100 @@
 /**
  * Facial Assessment Scale - Interactive Chart & Editable Table
+ * Bilingual Edition: English (EN) & Thai (TH)
  */
 
-// Initial Data Model matching reference configuration
+// Language State
+let currentLanguage = localStorage.getItem('facial_scale_lang') || 'th';
+
+// Initial Data Model matching reference clinical configuration
 const DEFAULT_ASSESSMENT_DATA = [
   {
     id: 'rad',
     category: 'Skin quality',
-    param: 'Loss of Radiance/Glow',
+    sectorId: 'skin_quality',
     score: 1, // 0: None, 1: Mild, 2: Moderate, 3: Severe
-    notes: 'Subtle loss of natural luminosity and skin dullness',
     angleDeg: 67.5,
-    sectorId: 'skin_quality'
+    notes: {
+      en: 'Subtle loss of natural luminosity and skin dullness',
+      th: 'ผิวหมองคล้ำเล็กน้อย ขาดความเปล่งปลั่งตามธรรมชาติ'
+    }
   },
   {
     id: 'fir',
     category: 'Skin quality',
-    param: 'Loss of firmness',
+    sectorId: 'skin_quality',
     score: 2,
-    notes: 'Moderate skin laxity, delayed pinch recoil on malar cheek',
     angleDeg: 22.5,
-    sectorId: 'skin_quality'
+    notes: {
+      en: 'Moderate skin laxity, delayed pinch recoil on malar cheek',
+      th: 'ผิวหย่อนคล้อยปานกลาง การคืนตัวของผิวบริเวณแก้มช้าลง'
+    }
   },
   {
     id: 'sag',
     category: 'Facial shape',
-    param: 'Sagging',
+    sectorId: 'facial_shape',
     score: 2,
-    notes: 'Moderate lower-face jowling and indistinct jawline border',
     angleDeg: -22.5,
-    sectorId: 'facial_shape'
+    notes: {
+      en: 'Moderate lower-face jowling and indistinct jawline border',
+      th: 'กระพุ้งแก้มหย่อนคล้อยปานกลาง แนวกรามไม่คมชัด'
+    }
   },
   {
     id: 'vol',
     category: 'Facial shape',
-    param: 'Volume loss',
+    sectorId: 'facial_shape',
     score: 1,
-    notes: 'Mild temporal depression and medial infraorbital fat loss',
     angleDeg: -67.5,
-    sectorId: 'facial_shape'
+    notes: {
+      en: 'Mild temporal depression and medial infraorbital fat loss',
+      th: 'ขมับตอบเล็กน้อย และมีร่องใต้ตาจากการยุบตัวของไขมัน'
+    }
   },
   {
     id: 'imb',
     category: 'Proportions',
-    param: 'Imbalance',
+    sectorId: 'proportions',
     score: 1,
-    notes: 'Mild vertical height shortening in lower third',
     angleDeg: -112.5,
-    sectorId: 'proportions'
+    notes: {
+      en: 'Mild vertical height shortening in lower third',
+      th: 'สัดส่วนใบหน้าส่วนล่างสั้นกว่าปกติเล็กน้อย'
+    }
   },
   {
     id: 'asym',
     category: 'Symmetry',
-    param: 'Asymmetry',
+    sectorId: 'symmetry',
     score: 1,
-    notes: 'Slight left-to-right eyebrow and commissure height variance',
     angleDeg: -157.5,
-    sectorId: 'symmetry'
+    notes: {
+      en: 'Slight left-to-right eyebrow and commissure height variance',
+      th: 'ระดับคิ้วและมุมปากทั้งสองข้างต่างกันเล็กน้อย'
+    }
   },
   {
     id: 'stat',
     category: 'Expression',
-    param: 'Static lines',
+    sectorId: 'expression',
     score: 3,
-    notes: 'Severe resting glabellar lines and etched nasolabial folds',
     angleDeg: 157.5,
-    sectorId: 'expression'
+    notes: {
+      en: 'Severe resting glabellar lines and etched nasolabial folds',
+      th: 'รอยย่นระหว่างคิ้วลึกชัดเจน และร่องแก้มลึกมากขณะพัก'
+    }
   },
   {
     id: 'dyn',
     category: 'Expression',
-    param: 'Dynamic lines',
+    sectorId: 'expression',
     score: 1,
-    notes: 'Mild periocular dynamic rhytids upon smiling',
     angleDeg: 112.5,
-    sectorId: 'expression'
+    notes: {
+      en: 'Mild periocular dynamic rhytids upon smiling',
+      th: 'ริ้วรอยรอบดวงตาเล็กน้อยเวลายิ้ม'
+    }
   }
 ];
 
@@ -93,13 +113,266 @@ const baselineComparisonData = [
   { id: 'dyn', score: 2 }
 ];
 
-// Severity Labels
-const SEVERITY_LEVELS = [
-  { val: 0, label: 'None' },
-  { val: 1, label: 'Mild' },
-  { val: 2, label: 'Moderate' },
-  { val: 3, label: 'Severe' }
-];
+// Bilingual Dictionary
+const TRANSLATIONS = {
+  en: {
+    pageTitle: 'Facial Assessment Scale - Interactive Clinical Evaluation Tool',
+    brandBadge: 'Aesthetic Dermatology',
+    mainTitle: 'Facial Assessment Scale',
+    btnReset: 'Reset',
+    btnExport: 'Export / Print',
+    exportPng: 'Export Chart as PNG (High-Res)',
+    exportSvg: 'Export Chart as SVG',
+    printReport: 'Print Clinical Report (PDF)',
+    exportJson: 'Download Assessment Data (JSON)',
+    labelPatientName: 'Patient Name / ID',
+    placeholderPatientName: 'Enter patient name or ID',
+    labelAssessmentDate: 'Assessment Date',
+    labelEvaluatorName: 'Evaluating Clinician',
+    placeholderEvaluator: 'Doctor or evaluator',
+    labelSessionStage: 'Evaluation Stage',
+    stageBaseline: 'Baseline (Pre-Treatment)',
+    stage1m: '1-Month Follow-up',
+    stage3m: '3-Month Follow-up',
+    stage6m: '6-Month Follow-up',
+    stageMaint: 'Maintenance',
+    statTotalLabel: 'Total Severity Score',
+    statAvgLabel: 'Average Severity',
+    statDominantLabel: 'Dominant Concern',
+    dominantNone: 'None (All normal)',
+    chartTitle: 'Circular Polar Assessment Scale',
+    chartHint: 'Click any ring node (0–3) on the spokes to interactively set scores',
+    btnCompare: '+ Compare Baseline',
+    btnHideCompare: 'Hide Baseline',
+    sev0: '<strong>0</strong> none',
+    sev1: '<strong>1</strong> mild',
+    sev2: '<strong>2</strong> moderate',
+    sev3: '<strong>3</strong> severe',
+    legendCaption: 'SEVERITY EVALUATION SCALE',
+    tableTitle: 'Assessment Parameters & Scoring',
+    tableHint: 'Edit parameters, toggle severity levels, or add clinical observations',
+    thCategory: 'Category',
+    thParameter: 'Parameter',
+    thSeverity: 'Severity Level (0–3)',
+    thNotes: 'Clinical Notes',
+    catSkinQuality: 'Skin quality',
+    catFacialShape: 'Facial shape',
+    catProportionsSymmetry: 'Proportions & Symmetry',
+    catExpression: 'Expression',
+    notesLabel: 'Comprehensive Treatment Recommendation & Notes',
+    notesPlaceholder: 'Enter planned aesthetic intervention (e.g. neuromodulator injection for dynamic lines, hyaluronic acid filler for volume loss, bio-remodeling for skin radiance)...',
+    defaultRecommendation: 'Recommendation: Neuromodulator treatment indicated for severe glabellar/forehead dynamic & static lines. Consider mid-face volume restoration and hyaluronic acid skin booster for loss of radiance and firmness.',
+    footerCitation: 'Clinical Reference: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.',
+    footerDisclaimer: 'Standardized Aesthetic Severity Scale • All data stored locally in browser session',
+    severityLevels: [
+      { val: 0, pill: '0 None', label: 'None' },
+      { val: 1, pill: '1 Mild', label: 'Mild' },
+      { val: 2, pill: '2 Mod', label: 'Moderate' },
+      { val: 3, pill: '3 Sev', label: 'Severe' }
+    ],
+    severityStatusText: {
+      minimal: 'Minimal',
+      mildMod: 'Mild–Mod',
+      modSev: 'Moderate–Sev',
+      severe: 'Severe',
+      none: 'None'
+    },
+    categories: {
+      skin_quality: 'Skin quality',
+      facial_shape: 'Facial shape',
+      proportions: 'Proportions',
+      symmetry: 'Symmetry',
+      expression: 'Expression'
+    },
+    parameters: {
+      rad: {
+        title: 'Loss of Radiance/Glow',
+        chartLabel: 'Loss of Radiance',
+        sub: 'Skin tone, glow & surface luminosity'
+      },
+      fir: {
+        title: 'Loss of firmness',
+        chartLabel: 'Loss of firmness',
+        sub: 'Dermal thickness, elasticity & pinch recoil'
+      },
+      sag: {
+        title: 'Sagging',
+        chartLabel: 'Sagging',
+        sub: 'Jowl descent & mandibular line definition'
+      },
+      vol: {
+        title: 'Volume loss',
+        chartLabel: 'Volume loss',
+        sub: 'Midface, malar & temporal fat pad atrophy'
+      },
+      imb: {
+        title: 'Imbalance',
+        chartLabel: 'Imbalance',
+        sub: 'Facial third proportions & profile balance'
+      },
+      asym: {
+        title: 'Asymmetry',
+        chartLabel: 'Asymmetry',
+        sub: 'Hemi-facial bilateral harmony & brow level'
+      },
+      stat: {
+        title: 'Static lines',
+        chartLabel: 'Static lines',
+        sub: 'Resting rhytids, folds & etched creases'
+      },
+      dyn: {
+        title: 'Dynamic lines',
+        chartLabel: 'Dynamic lines',
+        sub: 'Hyperkinetic lines during muscle contraction'
+      }
+    }
+  },
+  th: {
+    pageTitle: 'แบบประเมินโครงสร้างและสภาพใบหน้า (Facial Assessment Scale)',
+    brandBadge: 'เวชศาสตร์ความงามและผิวพรรณ',
+    mainTitle: 'แบบประเมินโครงสร้างใบหน้า',
+    btnReset: 'รีเซ็ต',
+    btnExport: 'ส่งออก / พิมพ์',
+    exportPng: 'ส่งออกแผนภูมิเป็นรูป PNG (ความละเอียดสูง)',
+    exportSvg: 'ส่งออกแผนภูมิเป็นเวกเตอร์ SVG',
+    printReport: 'พิมพ์รายงานทางคลินิก (PDF)',
+    exportJson: 'ดาวน์โหลดข้อมูลการประเมิน (JSON)',
+    labelPatientName: 'ชื่อผู้รับบริการ / รหัสคนไข้',
+    placeholderPatientName: 'ระบุชื่อหรือรหัสคนไข้',
+    labelAssessmentDate: 'วันที่ทำการประเมิน',
+    labelEvaluatorName: 'แพทย์หรือผู้ประเมิน',
+    placeholderEvaluator: 'ระบุชื่อแพทย์ผู้ประเมิน',
+    labelSessionStage: 'ระยะของการประเมิน',
+    stageBaseline: 'ก่อนการรักษา (Baseline)',
+    stage1m: 'ติดตามผล 1 เดือน',
+    stage3m: 'ติดตามผล 3 เดือน',
+    stage6m: 'ติดตามผล 6 เดือน',
+    stageMaint: 'การดูแลต่อเนื่อง (Maintenance)',
+    statTotalLabel: 'คะแนนความรุนแรงรวม',
+    statAvgLabel: 'ระดับความรุนแรงเฉลี่ย',
+    statDominantLabel: 'จุดที่กังวลเด่นชัด',
+    dominantNone: 'ไม่มี (อยู่ในเกณฑ์ปกติทุกจุด)',
+    chartTitle: 'แผนภูมิประเมินใบหน้ารูปวงกลม (Polar Scale)',
+    chartHint: 'คลิกที่จุดวงแหวน (0–3) บนแกนแต่ละด้านเพื่อปรับคะแนนประเมินได้ทันที',
+    btnCompare: '+ เปรียบเทียบค่าเริ่มต้น',
+    btnHideCompare: 'ซ่อนเส้นเปรียบเทียบ',
+    sev0: '<strong>0</strong> ไม่มี',
+    sev1: '<strong>1</strong> เล็กน้อย',
+    sev2: '<strong>2</strong> ปานกลาง',
+    sev3: '<strong>3</strong> รุนแรงมาก',
+    legendCaption: 'เกณฑ์การประเมินระดับความรุนแรง (0–3)',
+    tableTitle: 'ตารางประเมินพารามิเตอร์และบันทึกอาการ',
+    tableHint: 'เลือกระดับความรุนแรง หรือบันทึกข้อสังเกตเพิ่มเติมสำหรับแต่ละบริเวณ',
+    thCategory: 'หมวดหมู่',
+    thParameter: 'พารามิเตอร์',
+    thSeverity: 'ระดับความรุนแรง (0–3)',
+    thNotes: 'บันทึกข้อสังเกตทางคลินิก',
+    catSkinQuality: 'คุณภาพผิว (Skin Quality)',
+    catFacialShape: 'รูปหน้า (Facial Shape)',
+    catProportionsSymmetry: 'สัดส่วนและความสมมาตร',
+    catExpression: 'ริ้วรอยและการแสดงสีหน้า',
+    notesLabel: 'ข้อเสนอแนะและแผนการรักษาทางคลินิกแบบองค์รวม',
+    notesPlaceholder: 'ระบุแผนการรักษาทางความงาม (เช่น ฉีดสารคลายกล้ามเนื้อสำหรับริ้วรอยแสดงอารมณ์, เติมสารไฮยาลูโรนิกสำหรับวอลลุ่มที่ยุบตัว, ปรับสภาพผิวด้วย Skin Booster)...',
+    defaultRecommendation: 'คำแนะนำการรักษา: แนะนำการรักษาด้วยสารคลายกล้ามเนื้อ (Neuromodulator) สำหรับริ้วรอยลึกระหว่างคิ้วและหน้าผากทั้งขณะนิ่งและแสดงอารมณ์ พิจารณาเติมเต็มวอลลุ่มบริเวณใบหน้าส่วนกลาง และเพิ่มความชุ่มชื้นกระชับผิวด้วย Skin Booster เพื่อฟื้นฟูความเปล่งปลั่งและความยืดหยุ่นของผิว',
+    footerCitation: 'เอกสารอ้างอิงทางคลินิก: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.',
+    footerDisclaimer: 'เกณฑ์การประเมินมาตรฐานทางการแพทย์ • ข้อมูลทั้งหมดถูกจัดเก็บบนอุปกรณ์ของคุณ',
+    severityLevels: [
+      { val: 0, pill: '0 ไม่มี', label: 'ไม่มี (None)' },
+      { val: 1, pill: '1 น้อย', label: 'เล็กน้อย (Mild)' },
+      { val: 2, pill: '2 กลาง', label: 'ปานกลาง (Moderate)' },
+      { val: 3, pill: '3 มาก', label: 'รุนแรงมาก (Severe)' }
+    ],
+    severityStatusText: {
+      minimal: 'เล็กน้อยมาก',
+      mildMod: 'น้อย–ปานกลาง',
+      modSev: 'ปานกลาง–มาก',
+      severe: 'รุนแรงมาก',
+      none: 'ปกติ'
+    },
+    categories: {
+      skin_quality: 'คุณภาพผิว',
+      facial_shape: 'รูปหน้า',
+      proportions: 'สัดส่วน',
+      symmetry: 'ความสมมาตร',
+      expression: 'การแสดงสีหน้า'
+    },
+    parameters: {
+      rad: {
+        title: 'ความเปล่งปลั่งลดลง',
+        chartLabel: 'ความเปล่งปลั่งลดลง',
+        sub: 'ความกระจ่างใส ความสม่ำเสมอของสีผิว (Loss of Radiance)'
+      },
+      fir: {
+        title: 'ความกระชับลดลง',
+        chartLabel: 'ความกระชับลดลง',
+        sub: 'ความหนาแน่นและความยืดหยุ่นของชั้นผิว (Loss of Firmness)'
+      },
+      sag: {
+        title: 'ความหย่อนคล้อย',
+        chartLabel: 'ความหย่อนคล้อย',
+        sub: 'แนวกรามและความหย่อนคล้อยของกระพุ้งแก้ม (Sagging)'
+      },
+      vol: {
+        title: 'การสูญเสียปริมาตร',
+        chartLabel: 'การสูญเสียปริมาตร',
+        sub: 'การยุบตัวของไขมันบริเวณขมับ แก้ม และใต้ตา (Volume Loss)'
+      },
+      imb: {
+        title: 'ความไม่ได้สัดส่วน',
+        chartLabel: 'ไม่ได้สัดส่วน',
+        sub: 'สัดส่วนใบหน้า 3 ส่วนและความสมดุลด้านข้าง (Imbalance)'
+      },
+      asym: {
+        title: 'ความไม่สมมาตร',
+        chartLabel: 'ไม่สมมาตร',
+        sub: 'ความสมดุลซ้าย-ขวา ระดับคิ้ว และมุมปาก (Asymmetry)'
+      },
+      stat: {
+        title: 'ริ้วรอยขณะพัก',
+        chartLabel: 'ริ้วรอยขณะพัก',
+        sub: 'รอยย่น ร่องแก้ม และรอยพับลึกที่เห็นชัดขณะหน้านิ่ง (Static Lines)'
+      },
+      dyn: {
+        title: 'ริ้วรอยแสดงอารมณ์',
+        chartLabel: 'ริ้วรอยแสดงสีหน้า',
+        sub: 'ริ้วรอยหางตา หน้าผาก เมื่อยิ้มหรือขยับกล้ามเนื้อ (Dynamic Lines)'
+      }
+    }
+  }
+};
+
+/**
+ * Localization Helpers
+ */
+function t(key) {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict[key] || TRANSLATIONS.en[key] || key;
+}
+
+function getParamTitle(id) {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict.parameters[id]?.title || TRANSLATIONS.en.parameters[id]?.title || id;
+}
+
+function getParamChartLabel(id) {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict.parameters[id]?.chartLabel || TRANSLATIONS.en.parameters[id]?.chartLabel || id;
+}
+
+function getParamSubtitle(id) {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict.parameters[id]?.sub || TRANSLATIONS.en.parameters[id]?.sub || '';
+}
+
+function getCategoryName(secId) {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict.categories[secId] || TRANSLATIONS.en.categories[secId] || secId;
+}
+
+function getSeverityLevels() {
+  const dict = TRANSLATIONS[currentLanguage] || TRANSLATIONS.en;
+  return dict.severityLevels || TRANSLATIONS.en.severityLevels;
+}
 
 // Geometry Constants for 740x740 SVG Canvas
 const CX = 370;
@@ -112,32 +385,27 @@ const R_SPOKE_END = 232;  // Outer spoke arrow end
 const R_BANNER_IN = 240;  // Outer category arc inner
 const R_BANNER_OUT = 274; // Outer category arc outer
 
-// Category Styles matching Galderma paper aesthetic
+// Category Styles matching clinical paper aesthetic
 const CATEGORY_STYLES = {
   'skin_quality': {
     sectorFill: '#7467ab',
-    bannerFill: '#5b4f94',
-    name: 'Skin quality'
+    bannerFill: '#5b4f94'
   },
   'facial_shape': {
     sectorFill: '#7467ab',
-    bannerFill: '#5b4f94',
-    name: 'Facial shape'
+    bannerFill: '#5b4f94'
   },
   'proportions': {
     sectorFill: '#978bc5',
-    bannerFill: '#7c6fb5',
-    name: 'Proportions'
+    bannerFill: '#7c6fb5'
   },
   'symmetry': {
     sectorFill: '#a397ce',
-    bannerFill: '#897cbb',
-    name: 'Symmetry'
+    bannerFill: '#897cbb'
   },
   'expression': {
     sectorFill: '#beb7dc',
-    bannerFill: '#998ec4',
-    name: 'Expression'
+    bannerFill: '#998ec4'
   }
 };
 
@@ -283,7 +551,7 @@ function renderChart() {
 
     const bannerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     bannerText.setAttribute('fill', '#ffffff');
-    bannerText.setAttribute('font-size', '13');
+    bannerText.setAttribute('font-size', currentLanguage === 'th' ? '12.5' : '13');
     bannerText.setAttribute('font-weight', '700');
     bannerText.setAttribute('letter-spacing', '0.04em');
     bannerText.setAttribute('dominant-baseline', 'central');
@@ -293,7 +561,7 @@ function renderChart() {
     textPathElem.setAttribute('href', `#${pathId}`);
     textPathElem.setAttribute('startOffset', '50%');
     textPathElem.setAttribute('text-anchor', 'middle');
-    textPathElem.textContent = sec.style.name;
+    textPathElem.textContent = getCategoryName(sec.id);
 
     bannerText.appendChild(textPathElem);
     sectorGroup.appendChild(bannerText);
@@ -372,14 +640,14 @@ function renderChart() {
     arrowPoly.setAttribute('fill', '#ffffff');
     spokesGroup.appendChild(arrowPoly);
 
-    // Parameter label along spoke line: perfectly centered between Level 2 (160) and Level 3 (215)
-    const labelRad = (R_LEVEL_2 + R_LEVEL_3) / 2; // radius 187.5px
+    // Parameter label along spoke line
+    const labelRad = (R_LEVEL_2 + R_LEVEL_3) / 2;
     const pLabel = polarToCartesian(CX, CY, labelRad, item.angleDeg);
     const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
     let rotDeg = -item.angleDeg;
     let anchor = 'middle';
-    let offsetY = -12; // offset perpendicularly away from the spoke line
+    let offsetY = -12;
 
     if (item.angleDeg > 90 || item.angleDeg < -90) {
       rotDeg += 180;
@@ -390,7 +658,7 @@ function renderChart() {
     labelText.setAttribute('y', pLabel.y.toFixed(1));
     labelText.setAttribute('transform', `rotate(${rotDeg}, ${pLabel.x.toFixed(1)}, ${pLabel.y.toFixed(1)}) translate(0, ${offsetY})`);
     labelText.setAttribute('fill', '#ffffff');
-    labelText.setAttribute('font-size', '10.5');
+    labelText.setAttribute('font-size', currentLanguage === 'th' ? '10' : '10.5');
     labelText.setAttribute('font-weight', '700');
     labelText.setAttribute('text-anchor', anchor);
     labelText.setAttribute('letter-spacing', '0.02em');
@@ -398,14 +666,16 @@ function renderChart() {
     labelText.setAttribute('stroke-width', '2.5');
     labelText.setAttribute('paint-order', 'stroke fill');
     labelText.setAttribute('pointer-events', 'none');
-    labelText.textContent = item.param;
+    labelText.textContent = getParamChartLabel(item.id);
     spokesGroup.appendChild(labelText);
   });
   svg.appendChild(spokesGroup);
 
-  // Group 6: Interactive Spoke Ring Nodes (0, 1, 2, 3)
+  // Group 5: Interactive Spoke Ring Nodes (0, 1, 2, 3)
   const nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   nodesGroup.setAttribute('id', 'chart-nodes');
+
+  const sevLevels = getSeverityLevels();
 
   currentData.forEach(item => {
     [0, 1, 2, 3].forEach(level => {
@@ -439,7 +709,9 @@ function renderChart() {
       nodeCircle.addEventListener('click', clickHandler);
 
       hitArea.addEventListener('mouseenter', (e) => {
-        showTooltip(e, `<strong>${item.param}</strong>: Level ${level} (${SEVERITY_LEVELS[level].label})`);
+        const paramName = getParamTitle(item.id);
+        const lvlLabel = sevLevels[level]?.label || level;
+        showTooltip(e, `<strong>${paramName}</strong>: Level ${level} (${lvlLabel})`);
       });
       hitArea.addEventListener('mouseleave', hideTooltip);
 
@@ -449,7 +721,7 @@ function renderChart() {
   });
   svg.appendChild(nodesGroup);
 
-  // Group 7: Comparison Baseline Polygon Overlay (Optional)
+  // Group 6: Comparison Baseline Polygon Overlay (Optional)
   if (showComparison) {
     const compGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     compGroup.setAttribute('id', 'chart-comparison-overlay');
@@ -482,7 +754,7 @@ function renderChart() {
     svg.appendChild(compGroup);
   }
 
-  // Group 8: Main Assessment Score Polygon & Dark Filled Points
+  // Group 7: Main Assessment Score Polygon & Dark Filled Points
   const polygonGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   polygonGroup.setAttribute('id', 'chart-assessment-polygon');
 
@@ -515,7 +787,9 @@ function renderChart() {
     dot.setAttribute('cursor', 'pointer');
 
     dot.addEventListener('mouseenter', (e) => {
-      showTooltip(e, `<strong>${item.param}</strong>: Score ${item.score} (${SEVERITY_LEVELS[item.score].label})`);
+      const paramName = getParamTitle(item.id);
+      const lvlLabel = sevLevels[item.score]?.label || item.score;
+      showTooltip(e, `<strong>${paramName}</strong>: Score ${item.score} (${lvlLabel})`);
     });
     dot.addEventListener('mouseleave', hideTooltip);
 
@@ -533,6 +807,7 @@ function renderTable() {
   if (!tbody) return;
 
   tbody.innerHTML = '';
+  const sevLevels = getSeverityLevels();
 
   currentData.forEach(item => {
     const row = document.createElement('tr');
@@ -544,26 +819,41 @@ function renderTable() {
     else if (item.sectorId === 'symmetry') badgeClass = 'cat-symm';
     else if (item.sectorId === 'expression') badgeClass = 'cat-expr';
 
+    const categoryText = getCategoryName(item.sectorId);
+    const paramTitle = getParamTitle(item.id);
+    const paramSub = getParamSubtitle(item.id);
+
+    // Get note text in current language or user custom string
+    let currentNote = '';
+    if (typeof item.notes === 'object') {
+      currentNote = item.notes[currentLanguage] || item.notes.en || '';
+    } else {
+      currentNote = item.notes || '';
+    }
+
+    let pillsHtml = '';
+    sevLevels.forEach(lvl => {
+      const isActive = item.score === lvl.val ? 'active' : '';
+      pillsHtml += `<button class="sev-btn ${isActive}" data-val="${lvl.val}" title="${lvl.val} - ${lvl.label}">${lvl.pill}</button>`;
+    });
+
     row.innerHTML = `
       <td>
-        <span class="cat-badge ${badgeClass}">${item.category}</span>
+        <span class="cat-badge ${badgeClass}">${categoryText}</span>
       </td>
       <td>
         <div class="param-name-cell">
-          <span class="param-title">${item.param}</span>
-          <span class="param-sub">${getParamSubtitle(item.id)}</span>
+          <span class="param-title">${paramTitle}</span>
+          <span class="param-sub">${paramSub}</span>
         </div>
       </td>
       <td>
         <div class="severity-pill-group" data-id="${item.id}">
-          <button class="sev-btn ${item.score === 0 ? 'active' : ''}" data-val="0" title="0 - None">0 None</button>
-          <button class="sev-btn ${item.score === 1 ? 'active' : ''}" data-val="1" title="1 - Mild">1 Mild</button>
-          <button class="sev-btn ${item.score === 2 ? 'active' : ''}" data-val="2" title="2 - Moderate">2 Mod</button>
-          <button class="sev-btn ${item.score === 3 ? 'active' : ''}" data-val="3" title="3 - Severe">3 Sev</button>
+          ${pillsHtml}
         </div>
       </td>
       <td>
-        <input type="text" class="table-notes-input" value="${item.notes}" placeholder="Add observations..." data-id="${item.id}">
+        <input type="text" class="table-notes-input" value="${currentNote}" placeholder="${currentLanguage === 'th' ? 'เพิ่มข้อสังเกต...' : 'Add observations...'}" data-id="${item.id}">
       </td>
     `;
 
@@ -577,27 +867,16 @@ function renderTable() {
 
     const notesInput = row.querySelector('.table-notes-input');
     notesInput.addEventListener('input', (e) => {
-      item.notes = e.target.value;
+      if (typeof item.notes !== 'object') {
+        item.notes = {};
+      }
+      item.notes[currentLanguage] = e.target.value;
     });
 
     tbody.appendChild(row);
   });
 
   updateSummaryMetrics();
-}
-
-function getParamSubtitle(id) {
-  switch (id) {
-    case 'rad': return 'Skin tone, glow & surface luminosity';
-    case 'fir': return 'Dermal thickness, elasticity & pinch recoil';
-    case 'sag': return 'Jowl descent & mandibular line definition';
-    case 'vol': return 'Midface, malar & temporal fat pad atrophy';
-    case 'imb': return 'Facial third proportions & profile balance';
-    case 'asym': return 'Hemi-facial bilateral harmony & brow level';
-    case 'stat': return 'Resting rhytids, folds & etched creases';
-    case 'dyn': return 'Hyperkinetic lines during muscle contraction';
-    default: return '';
-  }
 }
 
 /**
@@ -640,18 +919,24 @@ function updateSummaryMetrics() {
 
   const avgEl = document.getElementById('stat-avg-score');
   if (avgEl) {
-    let levelText = 'None';
-    if (avgScore > 2.2) levelText = 'Severe';
-    else if (avgScore > 1.5) levelText = 'Moderate–Sev';
-    else if (avgScore > 0.8) levelText = 'Mild–Mod';
-    else if (avgScore > 0.1) levelText = 'Minimal';
+    const dict = TRANSLATIONS[currentLanguage]?.severityStatusText || TRANSLATIONS.en.severityStatusText;
+    let levelText = dict.none;
+    if (avgScore > 2.2) levelText = dict.severe;
+    else if (avgScore > 1.5) levelText = dict.modSev;
+    else if (avgScore > 0.8) levelText = dict.mildMod;
+    else if (avgScore > 0.1) levelText = dict.minimal;
     avgEl.innerHTML = `${avgScore} <span class="stat-level">(${levelText})</span>`;
   }
 
   const maxItem = [...currentData].sort((a, b) => b.score - a.score)[0];
   const domEl = document.getElementById('stat-dominant');
   if (domEl && maxItem) {
-    domEl.textContent = maxItem.score > 0 ? `${maxItem.param} (${maxItem.score})` : 'None (All normal)';
+    if (maxItem.score > 0) {
+      const name = getParamTitle(maxItem.id);
+      domEl.textContent = `${name} (${maxItem.score})`;
+    } else {
+      domEl.textContent = t('dominantNone');
+    }
   }
 
   const skinScore = currentData.filter(d => d.sectorId === 'skin_quality').reduce((a, b) => a + b.score, 0);
@@ -699,10 +984,75 @@ function hideTooltip() {
 }
 
 /**
- * Global Toolbar Handlers
+ * Apply Selected Language to all UI Elements
+ */
+function setLanguage(lang) {
+  if (!TRANSLATIONS[lang]) return;
+  currentLanguage = lang;
+  localStorage.setItem('facial_scale_lang', lang);
+
+  // Update HTML tag
+  document.documentElement.lang = lang;
+  document.title = t('pageTitle');
+
+  // Update active state in switcher buttons
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
+  });
+
+  // Update elements with data-i18n attribute
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (key && TRANSLATIONS[lang][key]) {
+      el.innerHTML = TRANSLATIONS[lang][key];
+    }
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+    const key = el.getAttribute('data-i18n-ph');
+    if (key && TRANSLATIONS[lang][key]) {
+      el.placeholder = TRANSLATIONS[lang][key];
+    }
+  });
+
+  // Update comparison toggle button text
+  const btnCompare = document.getElementById('toggle-comparison');
+  if (btnCompare) {
+    const textSpan = btnCompare.querySelector('[data-i18n]') || btnCompare;
+    textSpan.textContent = showComparison ? t('btnHideCompare') : t('btnCompare');
+  }
+
+  // Update recommendation notes if currently default
+  const notesTextarea = document.getElementById('overall-clinical-notes');
+  if (notesTextarea) {
+    const otherLang = lang === 'th' ? 'en' : 'th';
+    if (notesTextarea.value.trim() === TRANSLATIONS[otherLang].defaultRecommendation.trim()) {
+      notesTextarea.value = TRANSLATIONS[lang].defaultRecommendation;
+    }
+  }
+
+  // Re-render chart and table with localized strings
+  renderChart();
+  renderTable();
+}
+
+/**
+ * Global Toolbar & App Handlers
  */
 function setupEventListeners() {
+  // Language Switcher Buttons
+  const btnEn = document.getElementById('lang-btn-en');
+  const btnTh = document.getElementById('lang-btn-th');
 
+  if (btnEn) {
+    btnEn.addEventListener('click', () => setLanguage('en'));
+  }
+  if (btnTh) {
+    btnTh.addEventListener('click', () => setLanguage('th'));
+  }
+
+  // Reset Button
   const btnReset = document.getElementById('btn-reset');
   if (btnReset) {
     btnReset.addEventListener('click', () => {
@@ -712,25 +1062,19 @@ function setupEventListeners() {
     });
   }
 
-  document.querySelectorAll('[data-set-all]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const val = parseInt(btn.getAttribute('data-set-all'), 10);
-      currentData.forEach(d => d.score = val);
-      renderChart();
-      renderTable();
-    });
-  });
-
+  // Comparison Toggle
   const btnCompare = document.getElementById('toggle-comparison');
   if (btnCompare) {
     btnCompare.addEventListener('click', () => {
       showComparison = !showComparison;
-      btnCompare.textContent = showComparison ? 'Hide Baseline' : '+ Compare Baseline';
+      const textSpan = btnCompare.querySelector('[data-i18n]') || btnCompare;
+      textSpan.textContent = showComparison ? t('btnHideCompare') : t('btnCompare');
       btnCompare.classList.toggle('btn-primary', showComparison);
       renderChart();
     });
   }
 
+  // Export Dropdown
   const exportBtn = document.getElementById('btn-export-dropdown');
   const exportMenu = document.getElementById('export-menu');
   if (exportBtn && exportMenu) {
@@ -744,6 +1088,7 @@ function setupEventListeners() {
     });
   }
 
+  // Print Report
   const btnPrint = document.getElementById('btn-print');
   if (btnPrint) {
     btnPrint.addEventListener('click', () => {
@@ -751,6 +1096,7 @@ function setupEventListeners() {
     });
   }
 
+  // Export SVG
   const btnExportSvg = document.getElementById('btn-export-svg');
   if (btnExportSvg) {
     btnExportSvg.addEventListener('click', () => {
@@ -765,13 +1111,14 @@ function setupEventListeners() {
       const url = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `Facial-Assessment-Scale-${Date.now()}.svg`;
+      link.download = `Facial-Assessment-Scale-${currentLanguage}-${Date.now()}.svg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
   }
 
+  // Export PNG
   const btnExportPng = document.getElementById('btn-export-png');
   if (btnExportPng) {
     btnExportPng.addEventListener('click', () => {
@@ -794,7 +1141,7 @@ function setupEventListeners() {
 
         const pngUrl = canvas.toDataURL("image/png");
         const link = document.createElement("a");
-        link.download = `Facial-Assessment-Scale-${Date.now()}.png`;
+        link.download = `Facial-Assessment-Scale-${currentLanguage}-${Date.now()}.png`;
         link.href = pngUrl;
         document.body.appendChild(link);
         link.click();
@@ -805,30 +1152,40 @@ function setupEventListeners() {
     });
   }
 
+  // Export JSON
   const btnExportJson = document.getElementById('btn-export-json');
   if (btnExportJson) {
     btnExportJson.addEventListener('click', () => {
       const payload = {
         title: 'Facial Assessment Scale',
+        language: currentLanguage,
         citation: 'Jain R, et al. J Cosmet Dermatol 2016;16(1):132-143',
         patient: document.getElementById('patient-name')?.value || '',
         date: document.getElementById('assessment-date')?.value || '',
         evaluator: document.getElementById('evaluator-name')?.value || '',
         stage: document.getElementById('session-stage')?.value || '',
         clinicalNotes: document.getElementById('overall-clinical-notes')?.value || '',
-        data: currentData
+        data: currentData.map(d => ({
+          id: d.id,
+          parameter: getParamTitle(d.id),
+          category: getCategoryName(d.sectorId),
+          score: d.score,
+          severityLabel: (getSeverityLevels()[d.score] || {}).label || '',
+          notes: typeof d.notes === 'object' ? (d.notes[currentLanguage] || d.notes.en) : d.notes
+        }))
       };
 
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
       const link = document.createElement('a');
       link.setAttribute("href", dataStr);
-      link.setAttribute("download", `Facial-Assessment-Data-${Date.now()}.json`);
+      link.setAttribute("download", `Facial-Assessment-Data-${currentLanguage}-${Date.now()}.json`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
     });
   }
 
+  // Date input auto-fill today
   const dateInput = document.getElementById('assessment-date');
   if (dateInput) {
     dateInput.value = new Date().toISOString().split('T')[0];
@@ -836,7 +1193,6 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  renderChart();
-  renderTable();
   setupEventListeners();
+  setLanguage(currentLanguage);
 });

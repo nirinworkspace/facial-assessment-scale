@@ -48,11 +48,20 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Prompt', 'Kanit', -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: var(--bg-app);
   color: var(--text-main);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+html[lang="th"] body {
+  font-family: 'Prompt', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html[lang="th"] .main-title {
+  font-family: 'Prompt', 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
 }
 
 .app-wrapper {
@@ -105,6 +114,51 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+/* Language Switcher Control */
+.lang-switcher {
+  display: inline-flex;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid var(--primary-border);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+  box-shadow: var(--shadow-sm);
+}
+
+.lang-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.02em;
+}
+
+.lang-btn .lang-flag {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.lang-btn:hover {
+  color: var(--primary-purple);
+  background: var(--primary-light);
+}
+
+.lang-btn.active {
+  background: var(--primary-purple);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(108, 95, 167, 0.35);
 }
 
 /* Buttons */

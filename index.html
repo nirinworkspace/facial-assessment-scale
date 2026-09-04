@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Prompt:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -19,18 +19,28 @@
     <!-- Top Clinical Navigation Header -->
     <header class="app-header">
       <div class="header-brand">
-        <div class="brand-badge">Aesthetic Dermatology</div>
-        <h1 class="main-title">Facial Assessment Scale</h1>
+        <div class="brand-badge" data-i18n="brandBadge">Aesthetic Dermatology</div>
+        <h1 class="main-title" data-i18n="mainTitle">Facial Assessment Scale</h1>
       </div>
 
       <div class="header-actions">
+        <!-- Language Switcher Toggle -->
+        <div class="lang-switcher" id="lang-switcher" role="group" aria-label="Language selection">
+          <button type="button" class="lang-btn active" data-lang="en" id="lang-btn-en">
+            <span class="lang-flag">🇬🇧</span> EN
+          </button>
+          <button type="button" class="lang-btn" data-lang="th" id="lang-btn-th">
+            <span class="lang-flag">🇹🇭</span> TH
+          </button>
+        </div>
+
         <button id="btn-reset" class="btn btn-ghost" title="Reset all scores to 0 (None)">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10" />
             <path d="m15 9-6 6" />
             <path d="m9 9 6 6" />
           </svg>
-          Reset
+          <span data-i18n="btnReset">Reset</span>
         </button>
         <div class="dropdown">
           <button id="btn-export-dropdown" class="btn btn-primary">
@@ -39,13 +49,13 @@
               <polyline points="7 10 12 15 17 10" />
               <line x1="12" y1="15" x2="12" y2="3" />
             </svg>
-            Export / Print
+            <span data-i18n="btnExport">Export / Print</span>
           </button>
           <div class="dropdown-menu" id="export-menu">
-            <button id="btn-export-png" class="dropdown-item">Export Chart as PNG (High-Res)</button>
-            <button id="btn-export-svg" class="dropdown-item">Export Chart as SVG</button>
-            <button id="btn-print" class="dropdown-item">Print Clinical Report (PDF)</button>
-            <button id="btn-export-json" class="dropdown-item">Download Assessment Data (JSON)</button>
+            <button id="btn-export-png" class="dropdown-item" data-i18n="exportPng">Export Chart as PNG (High-Res)</button>
+            <button id="btn-export-svg" class="dropdown-item" data-i18n="exportSvg">Export Chart as SVG</button>
+            <button id="btn-print" class="dropdown-item" data-i18n="printReport">Print Clinical Report (PDF)</button>
+            <button id="btn-export-json" class="dropdown-item" data-i18n="exportJson">Download Assessment Data (JSON)</button>
           </div>
         </div>
       </div>
@@ -55,25 +65,25 @@
     <section class="patient-card">
       <div class="patient-fields">
         <div class="field-group">
-          <label for="patient-name">Patient Name / ID</label>
-          <input type="text" id="patient-name" value="Jane Doe (ID: #4092)" placeholder="Enter patient name or ID">
+          <label for="patient-name" data-i18n="labelPatientName">Patient Name / ID</label>
+          <input type="text" id="patient-name" value="Jane Doe (ID: #4092)" placeholder="Enter patient name or ID" data-i18n-ph="placeholderPatientName">
         </div>
         <div class="field-group">
-          <label for="assessment-date">Assessment Date</label>
+          <label for="assessment-date" data-i18n="labelAssessmentDate">Assessment Date</label>
           <input type="date" id="assessment-date">
         </div>
         <div class="field-group">
-          <label for="evaluator-name">Evaluating Clinician</label>
-          <input type="text" id="evaluator-name" value="Dr. E. Vance, MD" placeholder="Doctor or evaluator">
+          <label for="evaluator-name" data-i18n="labelEvaluatorName">Evaluating Clinician</label>
+          <input type="text" id="evaluator-name" value="Dr. E. Vance, MD" placeholder="Doctor or evaluator" data-i18n-ph="placeholderEvaluator">
         </div>
         <div class="field-group">
-          <label for="session-stage">Evaluation Stage</label>
+          <label for="session-stage" data-i18n="labelSessionStage">Evaluation Stage</label>
           <select id="session-stage">
-            <option value="baseline">Baseline (Pre-Treatment)</option>
-            <option value="followup-1m">1-Month Follow-up</option>
-            <option value="followup-3m">3-Month Follow-up</option>
-            <option value="followup-6m">6-Month Follow-up</option>
-            <option value="maintenance">Maintenance</option>
+            <option value="baseline" data-i18n="stageBaseline">Baseline (Pre-Treatment)</option>
+            <option value="followup-1m" data-i18n="stage1m">1-Month Follow-up</option>
+            <option value="followup-3m" data-i18n="stage3m">3-Month Follow-up</option>
+            <option value="followup-6m" data-i18n="stage6m">6-Month Follow-up</option>
+            <option value="maintenance" data-i18n="stageMaint">Maintenance</option>
           </select>
         </div>
       </div>
@@ -81,15 +91,15 @@
       <!-- Quick Metrics Ribbon -->
       <div class="score-summary-bar">
         <div class="score-stat-item">
-          <span class="stat-label">Total Severity Score</span>
+          <span class="stat-label" data-i18n="statTotalLabel">Total Severity Score</span>
           <span class="stat-value" id="stat-total-score">11 <span class="stat-max">/ 24</span></span>
         </div>
         <div class="score-stat-item">
-          <span class="stat-label">Average Severity</span>
+          <span class="stat-label" data-i18n="statAvgLabel">Average Severity</span>
           <span class="stat-value" id="stat-avg-score">1.38 <span class="stat-level">(Mild–Mod)</span></span>
         </div>
         <div class="score-stat-item">
-          <span class="stat-label">Dominant Concern</span>
+          <span class="stat-label" data-i18n="statDominantLabel">Dominant Concern</span>
           <span class="stat-value highlight" id="stat-dominant">Static lines (3)</span>
         </div>
       </div>
@@ -101,13 +111,13 @@
       <section class="chart-panel card">
         <div class="panel-header">
           <div class="panel-title-wrap">
-            <h2 class="panel-title">Circular Polar Assessment Scale</h2>
-            <p class="panel-hint">Click any ring node (0–3) on the spokes to interactively set scores</p>
+            <h2 class="panel-title" data-i18n="chartTitle">Circular Polar Assessment Scale</h2>
+            <p class="panel-hint" data-i18n="chartHint">Click any ring node (0–3) on the spokes to interactively set scores</p>
           </div>
           <div class="chart-controls">
             <button id="toggle-comparison" class="btn btn-sm btn-outline"
               title="Show/hide secondary comparison overlay">
-              + Compare Baseline
+              <span data-i18n="btnCompare">+ Compare Baseline</span>
             </button>
           </div>
         </div>
@@ -120,31 +130,31 @@
           </svg>
         </div>
 
-        <!-- Severity Evaluation Scale Legend Footer (Exactly matching reference) -->
+        <!-- Severity Evaluation Scale Legend Footer -->
         <div class="severity-legend-box">
           <div class="legend-scale-dots">
             <div class="legend-step" data-level="0">
               <span class="legend-dot level-0"></span>
-              <span class="legend-label"><strong>0</strong> none</span>
+              <span class="legend-label" data-i18n="sev0"><strong>0</strong> none</span>
             </div>
             <div class="legend-arrow-line"></div>
             <div class="legend-step" data-level="1">
               <span class="legend-dot level-1"></span>
-              <span class="legend-label"><strong>1</strong> mild</span>
+              <span class="legend-label" data-i18n="sev1"><strong>1</strong> mild</span>
             </div>
             <div class="legend-arrow-line"></div>
             <div class="legend-step" data-level="2">
               <span class="legend-dot level-2"></span>
-              <span class="legend-label"><strong>2</strong> moderate</span>
+              <span class="legend-label" data-i18n="sev2"><strong>2</strong> moderate</span>
             </div>
             <div class="legend-arrow-line"></div>
             <div class="legend-step" data-level="3">
               <span class="legend-dot level-3"></span>
-              <span class="legend-label"><strong>3</strong> severe</span>
+              <span class="legend-label" data-i18n="sev3"><strong>3</strong> severe</span>
             </div>
             <div class="legend-arrow-head"></div>
           </div>
-          <div class="legend-caption">SEVERITY EVALUATION SCALE</div>
+          <div class="legend-caption" data-i18n="legendCaption">SEVERITY EVALUATION SCALE</div>
         </div>
       </section>
 
@@ -152,8 +162,8 @@
       <section class="table-panel card">
         <div class="panel-header">
           <div class="panel-title-wrap">
-            <h2 class="panel-title">Assessment Parameters & Scoring</h2>
-            <p class="panel-hint">Edit parameters, toggle severity levels, or add clinical observations</p>
+            <h2 class="panel-title" data-i18n="tableTitle">Assessment Parameters & Scoring</h2>
+            <p class="panel-hint" data-i18n="tableHint">Edit parameters, toggle severity levels, or add clinical observations</p>
           </div>
         </div>
 
@@ -161,10 +171,10 @@
           <table class="assessment-table" id="assessment-table">
             <thead>
               <tr>
-                <th style="width: 15%;">Category</th>
-                <th style="width: 26%;">Parameter</th>
-                <th style="width: 30%;">Severity Level (0–3)</th>
-                <th style="width: 29%;">Clinical Notes</th>
+                <th style="width: 17%;" data-i18n="thCategory">Category</th>
+                <th style="width: 27%;" data-i18n="thParameter">Parameter</th>
+                <th style="width: 28%;" data-i18n="thSeverity">Severity Level (0–3)</th>
+                <th style="width: 28%;" data-i18n="thNotes">Clinical Notes</th>
               </tr>
             </thead>
             <tbody id="table-body">
@@ -178,28 +188,28 @@
           <div class="quadrant-card" data-cat="Skin quality">
             <div class="quadrant-color-bar" style="background: #7367b0;"></div>
             <div class="quadrant-info">
-              <span class="q-name">Skin quality</span>
+              <span class="q-name" data-i18n="catSkinQuality">Skin quality</span>
               <span class="q-score" id="score-skin-quality">3 / 6</span>
             </div>
           </div>
           <div class="quadrant-card" data-cat="Facial shape">
             <div class="quadrant-color-bar" style="background: #7a6eaf;"></div>
             <div class="quadrant-info">
-              <span class="q-name">Facial shape</span>
+              <span class="q-name" data-i18n="catFacialShape">Facial shape</span>
               <span class="q-score" id="score-facial-shape">3 / 6</span>
             </div>
           </div>
           <div class="quadrant-card" data-cat="Proportions & Symmetry">
             <div class="quadrant-color-bar" style="background: #9990c7;"></div>
             <div class="quadrant-info">
-              <span class="q-name">Proportions & Symmetry</span>
+              <span class="q-name" data-i18n="catProportionsSymmetry">Proportions & Symmetry</span>
               <span class="q-score" id="score-proportions">2 / 6</span>
             </div>
           </div>
           <div class="quadrant-card" data-cat="Expression">
             <div class="quadrant-color-bar" style="background: #a8a0cf;"></div>
             <div class="quadrant-info">
-              <span class="q-name">Expression</span>
+              <span class="q-name" data-i18n="catExpression">Expression</span>
               <span class="q-score" id="score-expression">4 / 6</span>
             </div>
           </div>
@@ -207,9 +217,9 @@
 
         <!-- Clinical Notes Box -->
         <div class="clinical-summary-box">
-          <label for="overall-clinical-notes" class="notes-label">Comprehensive Treatment Recommendation & Notes</label>
+          <label for="overall-clinical-notes" class="notes-label" data-i18n="notesLabel">Comprehensive Treatment Recommendation & Notes</label>
           <textarea id="overall-clinical-notes" rows="3"
-            placeholder="Enter planned aesthetic intervention (e.g. neuromodulator injection for dynamic lines, hyaluronic acid filler for volume loss, bio-remodeling for skin radiance)...">Recommendation: Neuromodulator treatment indicated for severe glabellar/forehead dynamic & static lines. Consider mid-face volume restoration and hyaluronic acid skin booster for loss of radiance and firmness.</textarea>
+            placeholder="Enter planned aesthetic intervention..." data-i18n-ph="notesPlaceholder">Recommendation: Neuromodulator treatment indicated for severe glabellar/forehead dynamic & static lines. Consider mid-face volume restoration and hyaluronic acid skin booster for loss of radiance and firmness.</textarea>
         </div>
       </section>
     </main>
@@ -217,9 +227,8 @@
     <!-- Footer -->
     <footer class="app-footer">
       <div class="footer-content">
-        <span>Clinical Reference: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice
-          and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.</span>
-        <span>Standardized Aesthetic Severity Scale • All data stored locally in browser session</span>
+        <span data-i18n="footerCitation">Clinical Reference: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.</span>
+        <span data-i18n="footerDisclaimer">Standardized Aesthetic Severity Scale • All data stored locally in browser session</span>
       </div>
     </footer>
   </div>
