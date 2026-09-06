@@ -852,3 +852,408 @@ html[lang="th"] .main-title {
     border: 1px solid #ddd;
   }
 }
+
+/* ==========================================================================
+   A5 Clinical Sheet Print Mode (Chrome & Universal Cross-Browser)
+   ========================================================================== */
+.a5-print-section {
+  display: none;
+}
+
+@media print {
+  /* Hide A5 section during regular report print */
+  .a5-print-section {
+    display: none !important;
+  }
+
+  /* When printing specifically in A5 mode */
+  body.print-mode-a5 {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    color: #1a1528 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.print-mode-a5 .app-wrapper {
+    display: none !important;
+  }
+
+  body.print-mode-a5 .a5-print-section {
+    display: block !important;
+    width: 100% !important;
+    max-width: 136mm !important;
+    margin: 0 auto !important;
+    visibility: visible !important;
+  }
+
+  body.print-mode-a5 * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .a5-sheet {
+    width: 100%;
+    max-width: 136mm;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2.8mm;
+    font-family: 'Plus Jakarta Sans', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 7pt;
+    line-height: 1.25;
+    color: #1a1528;
+  }
+
+  /* Sheet Header */
+  .a5-sheet .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1.5px solid #6b5ca5;
+    padding-bottom: 1.8mm;
+  }
+
+  .a5-sheet .brand-left {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+  }
+
+  .a5-sheet .brand-logo-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6b5ca5, #4b3e82) !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff !important;
+    font-weight: 700;
+    font-size: 11px;
+  }
+
+  .a5-sheet .brand-text h1 {
+    margin: 0;
+    font-size: 10.5pt;
+    font-weight: 700;
+    color: #271f45 !important;
+    letter-spacing: -0.2px;
+  }
+
+  .a5-sheet .brand-text .sub-title {
+    font-size: 6.6pt;
+    color: #6b5ca5 !important;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .a5-sheet .meta-right {
+    text-align: right;
+  }
+
+  .a5-sheet .badge-stage {
+    display: inline-block;
+    background: #f1edfa !important;
+    color: #584793 !important;
+    border: 1px solid #d4caed;
+    border-radius: 12px;
+    padding: 1.5px 7px;
+    font-size: 6.6pt;
+    font-weight: 600;
+  }
+
+  .a5-sheet .paper-spec {
+    font-size: 6pt;
+    color: #7b7593 !important;
+    margin-top: 1.5px;
+  }
+
+  /* Patient Card */
+  .a5-sheet .patient-meta-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1.3fr 1.1fr;
+    gap: 2mm;
+    background: #fbfaff !important;
+    border: 1px solid #e2ddf0;
+    border-radius: 4px;
+    padding: 2mm 3mm;
+  }
+
+  .a5-sheet .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .a5-sheet .meta-label {
+    font-size: 5.5pt;
+    text-transform: uppercase;
+    color: #776e94 !important;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+
+  .a5-sheet .meta-val {
+    font-size: 7pt;
+    font-weight: 600;
+    color: #1d1733 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .a5-sheet .total-badge-inline {
+    color: #55448f !important;
+    font-weight: 700;
+  }
+
+  /* Scoring Scale Reference Bar */
+  .a5-sheet .scale-legend-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f5f3fa !important;
+    border-radius: 3px;
+    padding: 1.5mm 3mm;
+    border: 1px solid #e8e4f3;
+  }
+
+  .a5-sheet .scale-legend-title {
+    font-size: 6.2pt;
+    font-weight: 700;
+    color: #4b3e82 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+
+  .a5-sheet .scale-steps {
+    display: flex;
+    gap: 3.5mm;
+  }
+
+  .a5-sheet .scale-step {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 6.5pt;
+    color: #3f365d !important;
+  }
+
+  .a5-sheet .step-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .a5-sheet .dot-0 { background: #b8b3ce !important; }
+  .a5-sheet .dot-1 { background: #8e82be !important; }
+  .a5-sheet .dot-2 { background: #6757a5 !important; }
+  .a5-sheet .dot-3 { background: #3d2c77 !important; }
+
+  /* Table */
+  .a5-sheet .table-wrap {
+    width: 100%;
+  }
+
+  .a5-sheet table.a5-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .a5-sheet table.a5-table th {
+    background: #f1edf7 !important;
+    color: #3b2f67 !important;
+    font-size: 6.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 1.6mm 2mm;
+    text-align: left;
+    border-top: 1px solid #d4cde5;
+    border-bottom: 1.5px solid #6b5ca5;
+  }
+
+  .a5-sheet table.a5-table td {
+    padding: 1.6mm 2mm;
+    border-bottom: 1px solid #ece7f4;
+    vertical-align: middle;
+    font-size: 6.8pt;
+  }
+
+  .a5-sheet table.a5-table tr:last-child td {
+    border-bottom: 1.5px solid #d4cde5;
+  }
+
+  .a5-sheet table.a5-table tr:nth-child(even) td {
+    background: #faf9fd !important;
+  }
+
+  .a5-sheet .col-cat { width: 19%; }
+  .a5-sheet .col-param { width: 33%; }
+  .a5-sheet .col-score { width: 23%; }
+  .a5-sheet .col-notes { width: 25%; }
+
+  .a5-sheet .cat-pill {
+    display: inline-block;
+    color: #ffffff !important;
+    font-size: 5.6pt;
+    font-weight: 600;
+    padding: 1.5px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .a5-sheet .param-name {
+    font-weight: 600;
+    color: #21193b !important;
+    font-size: 7pt;
+  }
+
+  .a5-sheet .param-sub {
+    font-size: 5.5pt;
+    color: #7b7495 !important;
+    line-height: 1.15;
+  }
+
+  .a5-sheet .score-pills-wrap {
+    display: inline-flex;
+    gap: 2px;
+    vertical-align: middle;
+    margin-right: 3px;
+  }
+
+  .a5-sheet .sev-tag {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    border-radius: 2px;
+    font-size: 5.8pt;
+    background: #eae7f3 !important;
+    color: #6a6482 !important;
+    font-weight: 500;
+  }
+
+  .a5-sheet .sev-tag.selected {
+    background: #55448f !important;
+    color: #ffffff !important;
+    font-weight: 700;
+  }
+
+  .a5-sheet .score-label {
+    font-size: 6pt;
+    font-weight: 600;
+  }
+
+  .a5-sheet .score-lvl-0 { color: #87819f !important; }
+  .a5-sheet .score-lvl-1 { color: #6d60a5 !important; }
+  .a5-sheet .score-lvl-2 { color: #513e94 !important; }
+  .a5-sheet .score-lvl-3 { color: #322170 !important; font-weight: 700; }
+
+  .a5-sheet .note-text {
+    font-size: 6.2pt;
+    color: #3b3552 !important;
+    line-height: 1.2;
+    word-break: break-word;
+  }
+
+  .a5-sheet .empty-note {
+    color: #aaa4c0 !important;
+  }
+
+  /* Summary & Notes */
+  .a5-sheet .summary-grid-a5 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2mm;
+  }
+
+  .a5-sheet .cat-summary-box {
+    border: 1px solid #e2ddf0;
+    background: #faf9fe !important;
+    border-radius: 3px;
+    padding: 1.5mm 2mm;
+    text-align: center;
+    border-top: 2.5px solid #6b5ca5;
+  }
+
+  .a5-sheet .csb-name {
+    font-size: 5.4pt;
+    color: #655b85 !important;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .a5-sheet .csb-score {
+    font-size: 7.8pt;
+    font-weight: 700;
+    color: #2b1f54 !important;
+    margin-top: 1px;
+  }
+
+  .a5-sheet .notes-box-a5 {
+    border: 1px solid #dcd5ec;
+    background: #faf9fd !important;
+    border-radius: 3px;
+    padding: 1.8mm 2.5mm;
+  }
+
+  .a5-sheet .nb-label {
+    font-size: 5.6pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #554784 !important;
+    margin-bottom: 1px;
+    letter-spacing: 0.3px;
+  }
+
+  .a5-sheet .nb-content {
+    font-size: 6.4pt;
+    color: #251d3d !important;
+    line-height: 1.25;
+  }
+
+  /* Signatures & Footer */
+  .a5-sheet .sign-row-a5 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 1.2mm;
+    border-top: 1px dashed #d5cee5;
+  }
+
+  .a5-sheet .citation-left {
+    font-size: 5.2pt;
+    color: #7b7396 !important;
+    max-width: 60%;
+    line-height: 1.2;
+  }
+
+  .a5-sheet .sig-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+
+  .a5-sheet .sig-line {
+    width: 38mm;
+    border-bottom: 1px solid #4a3e74;
+    height: 5.5mm;
+  }
+
+  .a5-sheet .sig-label {
+    font-size: 5.5pt;
+    color: #524779 !important;
+    font-weight: 600;
+    text-align: right;
+  }
+}

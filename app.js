@@ -1063,7 +1063,7 @@ function escapeHtml(str) {
 /**
  * Generate High-Resolution Single-Page A5 Assessment Sheet HTML
  */
-function generateA5PrintHtml() {
+function generateA5SheetHtml() {
   const patientName = escapeHtml(document.getElementById('patient-name')?.value || '—');
   const assessmentDate = escapeHtml(document.getElementById('assessment-date')?.value || '—');
   const evaluatorName = escapeHtml(document.getElementById('evaluator-name')?.value || '—');
@@ -1134,348 +1134,7 @@ function generateA5PrintHtml() {
     `;
   }).join('');
 
-  return `<!DOCTYPE html>
-<html lang="${currentLanguage}">
-<head>
-  <meta charset="utf-8">
-  <title>${escapeHtml(t('mainTitle'))} - ${escapeHtml(t('tableTitle'))} (A5)</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    @page {
-      size: A5 portrait;
-      margin: 5mm 6mm 5mm 6mm;
-    }
-    * {
-      box-sizing: border-box;
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      background: #fff;
-      color: #1a1528;
-      font-family: 'Inter', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      font-size: 7.2pt;
-      line-height: 1.25;
-      -webkit-font-smoothing: antialiased;
-    }
-    .a5-sheet {
-      width: 100%;
-      max-width: 136mm;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 3mm;
-    }
-    /* Header */
-    .sheet-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      border-bottom: 1.5px solid #6b5ca5;
-      padding-bottom: 2mm;
-    }
-    .brand-left {
-      display: flex;
-      align-items: center;
-      gap: 2.5mm;
-    }
-    .brand-logo-icon {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #6b5ca5, #4b3e82);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-weight: 700;
-      font-size: 11px;
-    }
-    .brand-text h1 {
-      margin: 0;
-      font-size: 10.5pt;
-      font-weight: 700;
-      color: #271f45;
-      letter-spacing: -0.2px;
-    }
-    .brand-text .sub-title {
-      font-size: 6.8pt;
-      color: #6b5ca5;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .meta-right {
-      text-align: right;
-    }
-    .badge-stage {
-      display: inline-block;
-      background: #f1edfa;
-      color: #584793;
-      border: 1px solid #d4caed;
-      border-radius: 12px;
-      padding: 1.5px 7px;
-      font-size: 6.8pt;
-      font-weight: 600;
-    }
-    .paper-spec {
-      font-size: 6pt;
-      color: #7b7593;
-      margin-top: 1.5px;
-    }
-    /* Patient Card */
-    .patient-meta-grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1.3fr 1.1fr;
-      gap: 2mm;
-      background: #fbfaff;
-      border: 1px solid #e2ddf0;
-      border-radius: 4px;
-      padding: 2mm 3mm;
-    }
-    .meta-item {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }
-    .meta-label {
-      font-size: 5.6pt;
-      text-transform: uppercase;
-      color: #776e94;
-      font-weight: 600;
-      letter-spacing: 0.3px;
-    }
-    .meta-val {
-      font-size: 7pt;
-      font-weight: 600;
-      color: #1d1733;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .total-badge-inline {
-      color: #55448f;
-      font-weight: 700;
-    }
-    /* Scoring Scale Reference Bar */
-    .scale-legend-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: #f5f3fa;
-      border-radius: 3px;
-      padding: 1.5mm 3mm;
-      border: 1px solid #e8e4f3;
-    }
-    .scale-legend-title {
-      font-size: 6.2pt;
-      font-weight: 700;
-      color: #4b3e82;
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .scale-steps {
-      display: flex;
-      gap: 3.5mm;
-    }
-    .scale-step {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 6.5pt;
-      color: #3f365d;
-    }
-    .step-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-    .dot-0 { background: #b8b3ce; }
-    .dot-1 { background: #8e82be; }
-    .dot-2 { background: #6757a5; }
-    .dot-3 { background: #3d2c77; }
-    /* Table */
-    .table-wrap {
-      width: 100%;
-    }
-    table.a5-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    table.a5-table th {
-      background: #f1edf7;
-      color: #3b2f67;
-      font-size: 6.5pt;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      padding: 1.8mm 2mm;
-      text-align: left;
-      border-top: 1px solid #d4cde5;
-      border-bottom: 1.5px solid #6b5ca5;
-    }
-    table.a5-table td {
-      padding: 1.8mm 2mm;
-      border-bottom: 1px solid #ece7f4;
-      vertical-align: middle;
-      font-size: 6.8pt;
-    }
-    table.a5-table tr:last-child td {
-      border-bottom: 1.5px solid #d4cde5;
-    }
-    table.a5-table tr:nth-child(even) td {
-      background: #faf9fd;
-    }
-    .col-cat { width: 19%; }
-    .col-param { width: 33%; }
-    .col-score { width: 23%; }
-    .col-notes { width: 25%; }
-    .cat-pill {
-      display: inline-block;
-      color: #fff;
-      font-size: 5.6pt;
-      font-weight: 600;
-      padding: 1.5px 5px;
-      border-radius: 3px;
-      white-space: nowrap;
-    }
-    .param-name {
-      font-weight: 600;
-      color: #21193b;
-      font-size: 7pt;
-    }
-    .param-sub {
-      font-size: 5.6pt;
-      color: #7b7495;
-      line-height: 1.15;
-    }
-    .score-pills-wrap {
-      display: inline-flex;
-      gap: 2px;
-      vertical-align: middle;
-      margin-right: 3px;
-    }
-    .sev-tag {
-      display: inline-block;
-      width: 12px;
-      height: 12px;
-      line-height: 12px;
-      text-align: center;
-      border-radius: 2px;
-      font-size: 5.8pt;
-      background: #eae7f3;
-      color: #6a6482;
-      font-weight: 500;
-    }
-    .sev-tag.selected {
-      background: #55448f;
-      color: #ffffff;
-      font-weight: 700;
-    }
-    .score-label {
-      font-size: 6pt;
-      font-weight: 600;
-    }
-    .score-lvl-0 { color: #87819f; }
-    .score-lvl-1 { color: #6d60a5; }
-    .score-lvl-2 { color: #513e94; }
-    .score-lvl-3 { color: #322170; font-weight: 700; }
-    .note-text {
-      font-size: 6.2pt;
-      color: #3b3552;
-      line-height: 1.2;
-      word-break: break-word;
-    }
-    .empty-note {
-      color: #aaa4c0;
-    }
-    /* Summary & Notes */
-    .summary-grid-a5 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2mm;
-    }
-    .cat-summary-box {
-      border: 1px solid #e2ddf0;
-      background: #faf9fe;
-      border-radius: 3px;
-      padding: 1.5mm 2mm;
-      text-align: center;
-      border-top: 2.5px solid #6b5ca5;
-    }
-    .csb-name {
-      font-size: 5.4pt;
-      color: #655b85;
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .csb-score {
-      font-size: 7.8pt;
-      font-weight: 700;
-      color: #2b1f54;
-      margin-top: 1px;
-    }
-    .notes-box-a5 {
-      border: 1px solid #dcd5ec;
-      background: #faf9fd;
-      border-radius: 3px;
-      padding: 1.8mm 2.5mm;
-    }
-    .nb-label {
-      font-size: 5.6pt;
-      font-weight: 700;
-      text-transform: uppercase;
-      color: #554784;
-      margin-bottom: 1px;
-      letter-spacing: 0.3px;
-    }
-    .nb-content {
-      font-size: 6.4pt;
-      color: #251d3d;
-      line-height: 1.25;
-    }
-    /* Signatures & Footer */
-    .sign-row-a5 {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      padding-top: 1.5mm;
-      border-top: 1px dashed #d5cee5;
-    }
-    .citation-left {
-      font-size: 5.2pt;
-      color: #7b7396;
-      max-width: 60%;
-      line-height: 1.2;
-    }
-    .sig-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
-    }
-    .sig-line {
-      width: 38mm;
-      border-bottom: 1px solid #4a3e74;
-      height: 6mm;
-    }
-    .sig-label {
-      font-size: 5.6pt;
-      color: #524779;
-      font-weight: 600;
-      text-align: right;
-    }
-  </style>
-</head>
-<body>
+  return `
   <div class="a5-sheet">
     <!-- Header -->
     <header class="sheet-header">
@@ -1577,50 +1236,58 @@ function generateA5PrintHtml() {
         <div class="sig-label">${escapeHtml(t('a5Signature'))} / ${escapeHtml(t('a5DateSigned'))}</div>
       </div>
     </div>
-  </div>
-</body>
-</html>`;
+  </div>`;
 }
 
 /**
- * Print / Export Assessment Parameters & Scoring Scale on A5 Paper
+ * Print / Export Assessment Parameters & Scoring Scale on A5 Paper (Chrome & Universal Cross-Browser)
  */
 function exportAssessmentTableA5() {
-  const existingFrame = document.getElementById('print-a5-iframe');
-  if (existingFrame) existingFrame.remove();
+  let container = document.getElementById('a5-print-section');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'a5-print-section';
+    container.className = 'a5-print-section';
+    document.body.appendChild(container);
+  }
 
-  const iframe = document.createElement('iframe');
-  iframe.id = 'print-a5-iframe';
-  iframe.style.position = 'fixed';
-  iframe.style.right = '0';
-  iframe.style.bottom = '0';
-  iframe.style.width = '0';
-  iframe.style.height = '0';
-  iframe.style.border = '0';
-  iframe.style.visibility = 'hidden';
-  document.body.appendChild(iframe);
+  // Populate dynamic A5 sheet content
+  container.innerHTML = generateA5SheetHtml();
 
-  const printHtml = generateA5PrintHtml();
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(printHtml);
-  doc.close();
+  // Inject temporary @page rule for A5 portrait
+  let pageStyle = document.getElementById('a5-page-style');
+  if (!pageStyle) {
+    pageStyle = document.createElement('style');
+    pageStyle.id = 'a5-page-style';
+    pageStyle.textContent = `@page { size: A5 portrait; margin: 5mm 6mm 5mm 6mm; }`;
+    document.head.appendChild(pageStyle);
+  }
 
+  // Set print mode class on body
+  document.body.classList.add('print-mode-a5');
+
+  // Cleanup handler
+  let cleanedUp = false;
+  const cleanup = () => {
+    if (cleanedUp) return;
+    cleanedUp = true;
+    document.body.classList.remove('print-mode-a5');
+    const ps = document.getElementById('a5-page-style');
+    if (ps) ps.remove();
+    window.removeEventListener('afterprint', cleanup);
+  };
+
+  window.addEventListener('afterprint', cleanup);
+
+  // Small delay to ensure browser DOM reflow before calling native print
   setTimeout(() => {
     try {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
-    } catch (err) {
-      console.warn('Iframe print error, attempting fallback window print:', err);
-      const printWin = window.open('', '_blank');
-      if (printWin) {
-        printWin.document.write(printHtml);
-        printWin.document.close();
-        printWin.focus();
-        printWin.print();
-      }
+      window.print();
+    } finally {
+      // Safety cleanup after dialog closes or in case afterprint is not supported
+      setTimeout(cleanup, 1200);
     }
-  }, 350);
+  }, 80);
 }
 
 /**
