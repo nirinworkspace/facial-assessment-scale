@@ -12,7 +12,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'rad',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 1, // 0: None, 1: Mild, 2: Moderate, 3: Severe
+    score: 0, // 0: None, 1: Mild, 2: Moderate, 3: Severe
     angleDeg: 67.5,
     notes: {
       en: '',
@@ -23,7 +23,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'fir',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 2,
+    score: 0,
     angleDeg: 22.5,
     notes: {
       en: '',
@@ -34,7 +34,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'sag',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 2,
+    score: 0,
     angleDeg: -22.5,
     notes: {
       en: '',
@@ -45,7 +45,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'vol',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 1,
+    score: 0,
     angleDeg: -67.5,
     notes: {
       en: '',
@@ -56,7 +56,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'imb',
     category: 'Proportions',
     sectorId: 'proportions',
-    score: 1,
+    score: 0,
     angleDeg: -112.5,
     notes: {
       en: '',
@@ -67,7 +67,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'asym',
     category: 'Symmetry',
     sectorId: 'symmetry',
-    score: 1,
+    score: 0,
     angleDeg: -157.5,
     notes: {
       en: '',
@@ -78,7 +78,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'stat',
     category: 'Expression',
     sectorId: 'expression',
-    score: 3,
+    score: 0,
     angleDeg: 157.5,
     notes: {
       en: '',
@@ -89,7 +89,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'dyn',
     category: 'Expression',
     sectorId: 'expression',
-    score: 1,
+    score: 0,
     angleDeg: 112.5,
     notes: {
       en: '',
