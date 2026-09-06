@@ -145,11 +145,6 @@ html[lang="th"] .main-title {
   letter-spacing: 0.02em;
 }
 
-.lang-btn .lang-flag {
-  font-size: 0.95rem;
-  line-height: 1;
-}
-
 .lang-btn:hover {
   color: var(--primary-purple);
   background: var(--primary-light);
