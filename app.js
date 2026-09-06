@@ -15,8 +15,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 1, // 0: None, 1: Mild, 2: Moderate, 3: Severe
     angleDeg: 67.5,
     notes: {
-      en: 'Subtle loss of natural luminosity and skin dullness',
-      th: 'ผิวหมองคล้ำเล็กน้อย ขาดความเปล่งปลั่งตามธรรมชาติ'
+      en: '',
+      th: ''
     }
   },
   {
@@ -26,8 +26,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 2,
     angleDeg: 22.5,
     notes: {
-      en: 'Moderate skin laxity, delayed pinch recoil on malar cheek',
-      th: 'ผิวหย่อนคล้อยปานกลาง การคืนตัวของผิวบริเวณแก้มช้าลง'
+      en: '',
+      th: ''
     }
   },
   {
@@ -37,8 +37,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 2,
     angleDeg: -22.5,
     notes: {
-      en: 'Moderate lower-face jowling and indistinct jawline border',
-      th: 'กระพุ้งแก้มหย่อนคล้อยปานกลาง แนวกรามไม่คมชัด'
+      en: '',
+      th: ''
     }
   },
   {
@@ -48,8 +48,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 1,
     angleDeg: -67.5,
     notes: {
-      en: 'Mild temporal depression and medial infraorbital fat loss',
-      th: 'ขมับตอบเล็กน้อย และมีร่องใต้ตาจากการยุบตัวของไขมัน'
+      en: '',
+      th: ''
     }
   },
   {
@@ -59,8 +59,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 1,
     angleDeg: -112.5,
     notes: {
-      en: 'Mild vertical height shortening in lower third',
-      th: 'สัดส่วนใบหน้าส่วนล่างสั้นกว่าปกติเล็กน้อย'
+      en: '',
+      th: ''
     }
   },
   {
@@ -70,8 +70,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 1,
     angleDeg: -157.5,
     notes: {
-      en: 'Slight left-to-right eyebrow and commissure height variance',
-      th: 'ระดับคิ้วและมุมปากทั้งสองข้างต่างกันเล็กน้อย'
+      en: '',
+      th: ''
     }
   },
   {
@@ -81,8 +81,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 3,
     angleDeg: 157.5,
     notes: {
-      en: 'Severe resting glabellar lines and etched nasolabial folds',
-      th: 'รอยย่นระหว่างคิ้วลึกชัดเจน และร่องแก้มลึกมากขณะพัก'
+      en: '',
+      th: ''
     }
   },
   {
@@ -92,8 +92,8 @@ const DEFAULT_ASSESSMENT_DATA = [
     score: 1,
     angleDeg: 112.5,
     notes: {
-      en: 'Mild periocular dynamic rhytids upon smiling',
-      th: 'ริ้วรอยรอบดวงตาเล็กน้อยเวลายิ้ม'
+      en: '',
+      th: ''
     }
   }
 ];
@@ -103,14 +103,14 @@ let currentData = JSON.parse(JSON.stringify(DEFAULT_ASSESSMENT_DATA));
 
 // Baseline Comparison Data (e.g. Pre-Treatment Baseline)
 const baselineComparisonData = [
-  { id: 'rad', score: 0 },
-  { id: 'fir', score: 0 },
-  { id: 'sag', score: 0 },
-  { id: 'vol', score: 0 },
-  { id: 'imb', score: 0 },
-  { id: 'asym', score: 0 },
-  { id: 'stat', score: 0 },
-  { id: 'dyn', score: 0 }
+  { id: 'rad', score: 2 },
+  { id: 'fir', score: 3 },
+  { id: 'sag', score: 3 },
+  { id: 'vol', score: 2 },
+  { id: 'imb', score: 2 },
+  { id: 'asym', score: 1 },
+  { id: 'stat', score: 3 },
+  { id: 'dyn', score: 2 }
 ];
 
 // Bilingual Dictionary
@@ -166,7 +166,7 @@ const TRANSLATIONS = {
     catExpression: 'Expression',
     notesLabel: 'Comprehensive Treatment Recommendation & Notes',
     notesPlaceholder: 'Enter planned aesthetic intervention (e.g. neuromodulator injection for dynamic lines, hyaluronic acid filler for volume loss, bio-remodeling for skin radiance)...',
-    defaultRecommendation: 'Recommendation: Neuromodulator treatment indicated for severe glabellar/forehead dynamic & static lines. Consider mid-face volume restoration and hyaluronic acid skin booster for loss of radiance and firmness.',
+    defaultRecommendation: '',
     footerCitation: 'Clinical Reference: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.',
     footerDisclaimer: 'Standardized Aesthetic Severity Scale • All data stored locally in browser session',
     severityLevels: [
@@ -283,7 +283,7 @@ const TRANSLATIONS = {
     catExpression: 'ริ้วรอยและการแสดงสีหน้า',
     notesLabel: 'ข้อเสนอแนะและแผนการรักษาทางคลินิกแบบองค์รวม',
     notesPlaceholder: 'ระบุแผนการรักษาทางความงาม (เช่น ฉีดสารคลายกล้ามเนื้อสำหรับริ้วรอยแสดงอารมณ์, เติมสารไฮยาลูโรนิกสำหรับวอลลุ่มที่ยุบตัว, ปรับสภาพผิวด้วย Skin Booster)...',
-    defaultRecommendation: 'คำแนะนำการรักษา: แนะนำการรักษาด้วยสารคลายกล้ามเนื้อ (Neuromodulator) สำหรับริ้วรอยลึกระหว่างคิ้วและหน้าผากทั้งขณะนิ่งและแสดงอารมณ์ พิจารณาเติมเต็มวอลลุ่มบริเวณใบหน้าส่วนกลาง และเพิ่มความชุ่มชื้นกระชับผิวด้วย Skin Booster เพื่อฟื้นฟูความเปล่งปลั่งและความยืดหยุ่นของผิว',
+    defaultRecommendation: '',
     footerCitation: 'เอกสารอ้างอิงทางคลินิก: Jain R, Huang P, Ferraz RM, et al. A new facial assessment scale for clinical practice and research. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.',
     footerDisclaimer: 'เกณฑ์การประเมินมาตรฐานทางการแพทย์ • ข้อมูลทั้งหมดถูกจัดเก็บบนอุปกรณ์ของคุณ',
     severityLevels: [
@@ -1309,7 +1309,17 @@ function setupEventListeners() {
   const btnReset = document.getElementById('btn-reset');
   if (btnReset) {
     btnReset.addEventListener('click', () => {
-      currentData.forEach(d => d.score = 0);
+      currentData.forEach(d => {
+        d.score = 0;
+        if (typeof d.notes === 'object') {
+          d.notes.en = '';
+          d.notes.th = '';
+        } else {
+          d.notes = '';
+        }
+      });
+      const notesArea = document.getElementById('overall-clinical-notes');
+      if (notesArea) notesArea.value = '';
       renderChart();
       renderTable();
     });
