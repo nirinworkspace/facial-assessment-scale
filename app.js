@@ -103,14 +103,14 @@ let currentData = JSON.parse(JSON.stringify(DEFAULT_ASSESSMENT_DATA));
 
 // Baseline Comparison Data (e.g. Pre-Treatment Baseline)
 const baselineComparisonData = [
-  { id: 'rad', score: 2 },
-  { id: 'fir', score: 3 },
-  { id: 'sag', score: 3 },
-  { id: 'vol', score: 2 },
-  { id: 'imb', score: 2 },
-  { id: 'asym', score: 1 },
-  { id: 'stat', score: 3 },
-  { id: 'dyn', score: 2 }
+  { id: 'rad', score: 0 },
+  { id: 'fir', score: 0 },
+  { id: 'sag', score: 0 },
+  { id: 'vol', score: 0 },
+  { id: 'imb', score: 0 },
+  { id: 'asym', score: 0 },
+  { id: 'stat', score: 0 },
+  { id: 'dyn', score: 0 }
 ];
 
 // Bilingual Dictionary
