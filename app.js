@@ -124,7 +124,12 @@ const TRANSLATIONS = {
     exportPng: 'Export Chart as PNG (High-Res)',
     exportSvg: 'Export Chart as SVG',
     printReport: 'Print Clinical Report (PDF)',
+    exportTableA5: 'Export Assessment Parameters & Scoring (A5 Paper)',
     exportJson: 'Download Assessment Data (JSON)',
+    a5DocSubtitle: 'Clinical Assessment Parameters & Scoring Scale',
+    a5ScoreSummary: 'Score Breakdown',
+    a5Signature: 'Clinician Signature',
+    a5DateSigned: 'Date',
     labelPatientName: 'Patient Name / ID',
     placeholderPatientName: 'Enter patient name or ID',
     labelAssessmentDate: 'Assessment Date',
@@ -236,7 +241,12 @@ const TRANSLATIONS = {
     exportPng: 'ส่งออกแผนภูมิเป็นรูป PNG (ความละเอียดสูง)',
     exportSvg: 'ส่งออกแผนภูมิเป็นเวกเตอร์ SVG',
     printReport: 'พิมพ์รายงานทางคลินิก (PDF)',
+    exportTableA5: 'พิมพ์ตารางประเมินและเกณฑ์คะแนน (กระดาษ A5)',
     exportJson: 'ดาวน์โหลดข้อมูลการประเมิน (JSON)',
+    a5DocSubtitle: 'แบบประเมินพารามิเตอร์และเกณฑ์คะแนนทางคลินิก (A5)',
+    a5ScoreSummary: 'สรุปคะแนนรายหมวด',
+    a5Signature: 'ลายมือชื่อแพทย์ผู้ประเมิน',
+    a5DateSigned: 'วันที่',
     labelPatientName: 'ชื่อผู้รับบริการ / รหัสคนไข้',
     placeholderPatientName: 'ระบุชื่อหรือรหัสคนไข้',
     labelAssessmentDate: 'วันที่ทำการประเมิน',
@@ -1038,6 +1048,582 @@ function setLanguage(lang) {
 }
 
 /**
+ * Helper to escape HTML characters
+ */
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+/**
+ * Generate High-Resolution Single-Page A5 Assessment Sheet HTML
+ */
+function generateA5PrintHtml() {
+  const patientName = escapeHtml(document.getElementById('patient-name')?.value || '—');
+  const assessmentDate = escapeHtml(document.getElementById('assessment-date')?.value || '—');
+  const evaluatorName = escapeHtml(document.getElementById('evaluator-name')?.value || '—');
+  const stageEl = document.getElementById('session-stage');
+  const sessionStage = escapeHtml(stageEl ? (stageEl.options[stageEl.selectedIndex]?.text || stageEl.value) : '—');
+  const clinicalNotes = escapeHtml(document.getElementById('overall-clinical-notes')?.value || '');
+
+  const totalScore = currentData.reduce((acc, item) => acc + item.score, 0);
+  const avgScore = (totalScore / currentData.length).toFixed(2);
+  const sevLevels = getSeverityLevels();
+
+  const skinScore = currentData.filter(d => d.sectorId === 'skin_quality').reduce((a, b) => a + b.score, 0);
+  const shapeScore = currentData.filter(d => d.sectorId === 'facial_shape').reduce((a, b) => a + b.score, 0);
+  const propScore = currentData.filter(d => d.sectorId === 'proportions' || d.sectorId === 'symmetry').reduce((a, b) => a + b.score, 0);
+  const exprScore = currentData.filter(d => d.sectorId === 'expression').reduce((a, b) => a + b.score, 0);
+
+  const dict = TRANSLATIONS[currentLanguage]?.severityStatusText || TRANSLATIONS.en.severityStatusText;
+  let levelText = dict.none;
+  if (avgScore > 2.2) levelText = dict.severe;
+  else if (avgScore > 1.5) levelText = dict.modSev;
+  else if (avgScore > 0.8) levelText = dict.mildMod;
+  else if (avgScore > 0.1) levelText = dict.minimal;
+
+  const rowsHtml = currentData.map(item => {
+    let catBadgeColor = '#7467ab';
+    if (item.sectorId === 'proportions' || item.sectorId === 'symmetry') catBadgeColor = '#978bc5';
+    else if (item.sectorId === 'expression') catBadgeColor = '#a8a0cf';
+
+    const categoryText = escapeHtml(getCategoryName(item.sectorId));
+    const paramTitle = escapeHtml(getParamTitle(item.id));
+    const paramSub = escapeHtml(getParamSubtitle(item.id));
+
+    let note = '';
+    if (typeof item.notes === 'object') {
+      note = item.notes[currentLanguage] || item.notes.en || '';
+    } else {
+      note = item.notes || '';
+    }
+    const safeNote = escapeHtml(note);
+
+    let pillsHtml = '';
+    sevLevels.forEach(lvl => {
+      const isSelected = item.score === lvl.val;
+      pillsHtml += `<span class="sev-tag ${isSelected ? 'selected' : ''}">${lvl.val}</span>`;
+    });
+
+    const activeLevel = sevLevels[item.score] || { label: '' };
+
+    return `
+      <tr>
+        <td class="col-cat">
+          <span class="cat-pill" style="background:${catBadgeColor};">${categoryText}</span>
+        </td>
+        <td class="col-param">
+          <div class="param-name">${paramTitle}</div>
+          <div class="param-sub">${paramSub}</div>
+        </td>
+        <td class="col-score">
+          <div class="score-pills-wrap">
+            ${pillsHtml}
+          </div>
+          <span class="score-label score-lvl-${item.score}">${activeLevel.label}</span>
+        </td>
+        <td class="col-notes">
+          <div class="note-text">${safeNote || '<span class="empty-note">—</span>'}</div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="${currentLanguage}">
+<head>
+  <meta charset="utf-8">
+  <title>${escapeHtml(t('mainTitle'))} - ${escapeHtml(t('tableTitle'))} (A5)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 5mm 6mm 5mm 6mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      color: #1a1528;
+      font-family: 'Inter', 'Prompt', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 7.2pt;
+      line-height: 1.25;
+      -webkit-font-smoothing: antialiased;
+    }
+    .a5-sheet {
+      width: 100%;
+      max-width: 136mm;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3mm;
+    }
+    /* Header */
+    .sheet-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1.5px solid #6b5ca5;
+      padding-bottom: 2mm;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 2.5mm;
+    }
+    .brand-logo-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6b5ca5, #4b3e82);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 11px;
+    }
+    .brand-text h1 {
+      margin: 0;
+      font-size: 10.5pt;
+      font-weight: 700;
+      color: #271f45;
+      letter-spacing: -0.2px;
+    }
+    .brand-text .sub-title {
+      font-size: 6.8pt;
+      color: #6b5ca5;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .meta-right {
+      text-align: right;
+    }
+    .badge-stage {
+      display: inline-block;
+      background: #f1edfa;
+      color: #584793;
+      border: 1px solid #d4caed;
+      border-radius: 12px;
+      padding: 1.5px 7px;
+      font-size: 6.8pt;
+      font-weight: 600;
+    }
+    .paper-spec {
+      font-size: 6pt;
+      color: #7b7593;
+      margin-top: 1.5px;
+    }
+    /* Patient Card */
+    .patient-meta-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1.3fr 1.1fr;
+      gap: 2mm;
+      background: #fbfaff;
+      border: 1px solid #e2ddf0;
+      border-radius: 4px;
+      padding: 2mm 3mm;
+    }
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .meta-label {
+      font-size: 5.6pt;
+      text-transform: uppercase;
+      color: #776e94;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .meta-val {
+      font-size: 7pt;
+      font-weight: 600;
+      color: #1d1733;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .total-badge-inline {
+      color: #55448f;
+      font-weight: 700;
+    }
+    /* Scoring Scale Reference Bar */
+    .scale-legend-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f5f3fa;
+      border-radius: 3px;
+      padding: 1.5mm 3mm;
+      border: 1px solid #e8e4f3;
+    }
+    .scale-legend-title {
+      font-size: 6.2pt;
+      font-weight: 700;
+      color: #4b3e82;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .scale-steps {
+      display: flex;
+      gap: 3.5mm;
+    }
+    .scale-step {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 6.5pt;
+      color: #3f365d;
+    }
+    .step-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-0 { background: #b8b3ce; }
+    .dot-1 { background: #8e82be; }
+    .dot-2 { background: #6757a5; }
+    .dot-3 { background: #3d2c77; }
+    /* Table */
+    .table-wrap {
+      width: 100%;
+    }
+    table.a5-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    table.a5-table th {
+      background: #f1edf7;
+      color: #3b2f67;
+      font-size: 6.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      padding: 1.8mm 2mm;
+      text-align: left;
+      border-top: 1px solid #d4cde5;
+      border-bottom: 1.5px solid #6b5ca5;
+    }
+    table.a5-table td {
+      padding: 1.8mm 2mm;
+      border-bottom: 1px solid #ece7f4;
+      vertical-align: middle;
+      font-size: 6.8pt;
+    }
+    table.a5-table tr:last-child td {
+      border-bottom: 1.5px solid #d4cde5;
+    }
+    table.a5-table tr:nth-child(even) td {
+      background: #faf9fd;
+    }
+    .col-cat { width: 19%; }
+    .col-param { width: 33%; }
+    .col-score { width: 23%; }
+    .col-notes { width: 25%; }
+    .cat-pill {
+      display: inline-block;
+      color: #fff;
+      font-size: 5.6pt;
+      font-weight: 600;
+      padding: 1.5px 5px;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+    .param-name {
+      font-weight: 600;
+      color: #21193b;
+      font-size: 7pt;
+    }
+    .param-sub {
+      font-size: 5.6pt;
+      color: #7b7495;
+      line-height: 1.15;
+    }
+    .score-pills-wrap {
+      display: inline-flex;
+      gap: 2px;
+      vertical-align: middle;
+      margin-right: 3px;
+    }
+    .sev-tag {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      line-height: 12px;
+      text-align: center;
+      border-radius: 2px;
+      font-size: 5.8pt;
+      background: #eae7f3;
+      color: #6a6482;
+      font-weight: 500;
+    }
+    .sev-tag.selected {
+      background: #55448f;
+      color: #ffffff;
+      font-weight: 700;
+    }
+    .score-label {
+      font-size: 6pt;
+      font-weight: 600;
+    }
+    .score-lvl-0 { color: #87819f; }
+    .score-lvl-1 { color: #6d60a5; }
+    .score-lvl-2 { color: #513e94; }
+    .score-lvl-3 { color: #322170; font-weight: 700; }
+    .note-text {
+      font-size: 6.2pt;
+      color: #3b3552;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+    .empty-note {
+      color: #aaa4c0;
+    }
+    /* Summary & Notes */
+    .summary-grid-a5 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2mm;
+    }
+    .cat-summary-box {
+      border: 1px solid #e2ddf0;
+      background: #faf9fe;
+      border-radius: 3px;
+      padding: 1.5mm 2mm;
+      text-align: center;
+      border-top: 2.5px solid #6b5ca5;
+    }
+    .csb-name {
+      font-size: 5.4pt;
+      color: #655b85;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .csb-score {
+      font-size: 7.8pt;
+      font-weight: 700;
+      color: #2b1f54;
+      margin-top: 1px;
+    }
+    .notes-box-a5 {
+      border: 1px solid #dcd5ec;
+      background: #faf9fd;
+      border-radius: 3px;
+      padding: 1.8mm 2.5mm;
+    }
+    .nb-label {
+      font-size: 5.6pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #554784;
+      margin-bottom: 1px;
+      letter-spacing: 0.3px;
+    }
+    .nb-content {
+      font-size: 6.4pt;
+      color: #251d3d;
+      line-height: 1.25;
+    }
+    /* Signatures & Footer */
+    .sign-row-a5 {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      padding-top: 1.5mm;
+      border-top: 1px dashed #d5cee5;
+    }
+    .citation-left {
+      font-size: 5.2pt;
+      color: #7b7396;
+      max-width: 60%;
+      line-height: 1.2;
+    }
+    .sig-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .sig-line {
+      width: 38mm;
+      border-bottom: 1px solid #4a3e74;
+      height: 6mm;
+    }
+    .sig-label {
+      font-size: 5.6pt;
+      color: #524779;
+      font-weight: 600;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="a5-sheet">
+    <!-- Header -->
+    <header class="sheet-header">
+      <div class="brand-left">
+        <div class="brand-logo-icon">FA</div>
+        <div class="brand-text">
+          <h1>${escapeHtml(t('mainTitle'))}</h1>
+          <div class="sub-title">${escapeHtml(t('tableTitle'))} &bull; ${escapeHtml(t('brandBadge'))}</div>
+        </div>
+      </div>
+      <div class="meta-right">
+        <span class="badge-stage">${sessionStage}</span>
+        <div class="paper-spec">A5 Paper Scale (148 &times; 210 mm)</div>
+      </div>
+    </header>
+
+    <!-- Patient Meta Grid -->
+    <div class="patient-meta-grid">
+      <div class="meta-item">
+        <span class="meta-label">${escapeHtml(t('labelPatientName'))}</span>
+        <span class="meta-val">${patientName}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">${escapeHtml(t('labelAssessmentDate'))}</span>
+        <span class="meta-val">${assessmentDate}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">${escapeHtml(t('labelEvaluatorName'))}</span>
+        <span class="meta-val">${evaluatorName}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">${escapeHtml(t('statTotalLabel'))}</span>
+        <span class="meta-val"><span class="total-badge-inline">${totalScore} / 24</span> (${levelText})</span>
+      </div>
+    </div>
+
+    <!-- Severity Evaluation Scale Guide -->
+    <div class="scale-legend-bar">
+      <span class="scale-legend-title">${escapeHtml(t('legendCaption'))}</span>
+      <div class="scale-steps">
+        <div class="scale-step"><span class="step-dot dot-0"></span> ${escapeHtml(t('sev0')).replace(/<[^>]+>/g, '')}</div>
+        <div class="scale-step"><span class="step-dot dot-1"></span> ${escapeHtml(t('sev1')).replace(/<[^>]+>/g, '')}</div>
+        <div class="scale-step"><span class="step-dot dot-2"></span> ${escapeHtml(t('sev2')).replace(/<[^>]+>/g, '')}</div>
+        <div class="scale-step"><span class="step-dot dot-3"></span> ${escapeHtml(t('sev3')).replace(/<[^>]+>/g, '')}</div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="a5-table">
+        <thead>
+          <tr>
+            <th class="col-cat">${escapeHtml(t('thCategory'))}</th>
+            <th class="col-param">${escapeHtml(t('thParameter'))}</th>
+            <th class="col-score">${escapeHtml(t('thSeverity'))}</th>
+            <th class="col-notes">${escapeHtml(t('thNotes'))}</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rowsHtml}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Category Breakdown Cards -->
+    <div class="summary-grid-a5">
+      <div class="cat-summary-box" style="border-top-color: #7467ab;">
+        <div class="csb-name">${escapeHtml(t('catSkinQuality'))}</div>
+        <div class="csb-score">${skinScore} / 6</div>
+      </div>
+      <div class="cat-summary-box" style="border-top-color: #7467ab;">
+        <div class="csb-name">${escapeHtml(t('catFacialShape'))}</div>
+        <div class="csb-score">${shapeScore} / 6</div>
+      </div>
+      <div class="cat-summary-box" style="border-top-color: #978bc5;">
+        <div class="csb-name">${escapeHtml(t('catProportionsSymmetry'))}</div>
+        <div class="csb-score">${propScore} / 6</div>
+      </div>
+      <div class="cat-summary-box" style="border-top-color: #a8a0cf;">
+        <div class="csb-name">${escapeHtml(t('catExpression'))}</div>
+        <div class="csb-score">${exprScore} / 6</div>
+      </div>
+    </div>
+
+    <!-- Clinical Recommendation Box -->
+    <div class="notes-box-a5">
+      <div class="nb-label">${escapeHtml(t('notesLabel'))}</div>
+      <div class="nb-content">${clinicalNotes || '—'}</div>
+    </div>
+
+    <!-- Sign-off & Citation -->
+    <div class="sign-row-a5">
+      <div class="citation-left">
+        <strong>${escapeHtml(t('pageTitle'))}</strong><br>
+        Jain R, Huang P, Ferraz RM, et al. <em>J Cosmet Dermatol</em>. 2016;16(1):132-143.
+      </div>
+      <div class="sig-right">
+        <div class="sig-line"></div>
+        <div class="sig-label">${escapeHtml(t('a5Signature'))} / ${escapeHtml(t('a5DateSigned'))}</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+/**
+ * Print / Export Assessment Parameters & Scoring Scale on A5 Paper
+ */
+function exportAssessmentTableA5() {
+  const existingFrame = document.getElementById('print-a5-iframe');
+  if (existingFrame) existingFrame.remove();
+
+  const iframe = document.createElement('iframe');
+  iframe.id = 'print-a5-iframe';
+  iframe.style.position = 'fixed';
+  iframe.style.right = '0';
+  iframe.style.bottom = '0';
+  iframe.style.width = '0';
+  iframe.style.height = '0';
+  iframe.style.border = '0';
+  iframe.style.visibility = 'hidden';
+  document.body.appendChild(iframe);
+
+  const printHtml = generateA5PrintHtml();
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(printHtml);
+  doc.close();
+
+  setTimeout(() => {
+    try {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+    } catch (err) {
+      console.warn('Iframe print error, attempting fallback window print:', err);
+      const printWin = window.open('', '_blank');
+      if (printWin) {
+        printWin.document.write(printHtml);
+        printWin.document.close();
+        printWin.focus();
+        printWin.print();
+      }
+    }
+  }, 350);
+}
+
+/**
  * Global Toolbar & App Handlers
  */
 function setupEventListeners() {
@@ -1152,37 +1738,10 @@ function setupEventListeners() {
     });
   }
 
-  // Export JSON
-  const btnExportJson = document.getElementById('btn-export-json');
-  if (btnExportJson) {
-    btnExportJson.addEventListener('click', () => {
-      const payload = {
-        title: 'Facial Assessment Scale',
-        language: currentLanguage,
-        citation: 'Jain R, et al. J Cosmet Dermatol 2016;16(1):132-143',
-        patient: document.getElementById('patient-name')?.value || '',
-        date: document.getElementById('assessment-date')?.value || '',
-        evaluator: document.getElementById('evaluator-name')?.value || '',
-        stage: document.getElementById('session-stage')?.value || '',
-        clinicalNotes: document.getElementById('overall-clinical-notes')?.value || '',
-        data: currentData.map(d => ({
-          id: d.id,
-          parameter: getParamTitle(d.id),
-          category: getCategoryName(d.sectorId),
-          score: d.score,
-          severityLabel: (getSeverityLevels()[d.score] || {}).label || '',
-          notes: typeof d.notes === 'object' ? (d.notes[currentLanguage] || d.notes.en) : d.notes
-        }))
-      };
-
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
-      const link = document.createElement('a');
-      link.setAttribute("href", dataStr);
-      link.setAttribute("download", `Facial-Assessment-Data-${currentLanguage}-${Date.now()}.json`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+  // Export Assessment Parameters & Scoring Scale (A5 Paper)
+  const btnExportA5 = document.getElementById('btn-export-a5') || document.getElementById('btn-export-json');
+  if (btnExportA5) {
+    btnExportA5.addEventListener('click', exportAssessmentTableA5);
   }
 
   // Date input auto-fill today
