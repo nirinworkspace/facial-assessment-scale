@@ -12,7 +12,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'rad',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 0, // 0: None, 1: Mild, 2: Moderate, 3: Severe
+    score: 1, // Matches clinical scale reference image
     angleDeg: 67.5,
     notes: {
       en: '',
@@ -23,7 +23,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'fir',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 0,
+    score: 2,
     angleDeg: 22.5,
     notes: {
       en: '',
@@ -34,7 +34,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'sag',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 0,
+    score: 2,
     angleDeg: -22.5,
     notes: {
       en: '',
@@ -45,7 +45,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'vol',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 0,
+    score: 1,
     angleDeg: -67.5,
     notes: {
       en: '',
@@ -56,7 +56,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'imb',
     category: 'Proportions',
     sectorId: 'proportions',
-    score: 0,
+    score: 1,
     angleDeg: -112.5,
     notes: {
       en: '',
@@ -67,7 +67,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'asym',
     category: 'Symmetry',
     sectorId: 'symmetry',
-    score: 0,
+    score: 1,
     angleDeg: -157.5,
     notes: {
       en: '',
@@ -78,7 +78,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'stat',
     category: 'Expression',
     sectorId: 'expression',
-    score: 0,
+    score: 2,
     angleDeg: 157.5,
     notes: {
       en: '',
@@ -89,7 +89,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'dyn',
     category: 'Expression',
     sectorId: 'expression',
-    score: 0,
+    score: 1,
     angleDeg: 112.5,
     notes: {
       en: '',
@@ -101,15 +101,15 @@ const DEFAULT_ASSESSMENT_DATA = [
 let showComparison = false;
 let currentData = JSON.parse(JSON.stringify(DEFAULT_ASSESSMENT_DATA));
 
-// Baseline Comparison Data (e.g. Pre-Treatment Baseline)
+// Baseline Comparison Data (e.g. Pre-Treatment Baseline matching reference figure)
 const baselineComparisonData = [
-  { id: 'rad', score: 2 },
-  { id: 'fir', score: 3 },
-  { id: 'sag', score: 3 },
+  { id: 'rad', score: 3 },
+  { id: 'fir', score: 2 },
+  { id: 'sag', score: 2 },
   { id: 'vol', score: 2 },
   { id: 'imb', score: 2 },
-  { id: 'asym', score: 1 },
-  { id: 'stat', score: 3 },
+  { id: 'asym', score: 2 },
+  { id: 'stat', score: 2 },
   { id: 'dyn', score: 2 }
 ];
 
@@ -192,7 +192,7 @@ const TRANSLATIONS = {
     parameters: {
       rad: {
         title: 'Loss of Radiance/Glow',
-        chartLabel: 'Loss of Radiance',
+        chartLabel: 'Loss of Radiance/Glow',
         sub: 'Skin tone, glow & surface luminosity'
       },
       fir: {
@@ -384,38 +384,41 @@ function getSeverityLevels() {
   return dict.severityLevels || TRANSLATIONS.en.severityLevels;
 }
 
-// Geometry Constants for 740x740 SVG Canvas
+// Geometry Constants for 740x740 SVG Canvas matching clinical reference picture
 const CX = 370;
 const CY = 370;
-const R_INNER = 50;       // Center circle (0 level)
-const R_LEVEL_1 = 105;    // Level 1 (Mild)
-const R_LEVEL_2 = 160;    // Level 2 (Moderate)
-const R_LEVEL_3 = 215;    // Level 3 (Severe)
-const R_SPOKE_END = 232;  // Outer spoke arrow end
-const R_BANNER_IN = 240;  // Outer category arc inner
-const R_BANNER_OUT = 274; // Outer category arc outer
+const R_INNER = 48;        // Center white hub (0 ring)
+const R_LEVEL_1 = 98;      // Level 1 (Mild)
+const R_LEVEL_2 = 148;     // Level 2 (Moderate)
+const R_LEVEL_3 = 198;     // Level 3 (Severe)
+const R_SPOKE_ARROW = 216; // Outer spoke arrow tip
+const R_PARAM_ARC = 227;   // Arc radius for parameter text inside wedge
+const R_WEDGE_OUT = 240;   // Outer radius of inner colored wedge
+const R_BANNER_IN = 248;   // Inner radius of category banner arc
+const R_BANNER_OUT = 282;  // Outer radius of category banner arc
+const R_BANNER_MID = 265;  // Midline radius for category banner text
 
-// Category Styles matching clinical paper aesthetic
+// Authentic Sector & Banner Colors matching clinical reference picture
 const CATEGORY_STYLES = {
   'skin_quality': {
-    sectorFill: '#7467ab',
-    bannerFill: '#5b4f94'
+    sectorFill: '#5d4a7c',
+    bannerFill: '#4a3867'
   },
   'facial_shape': {
-    sectorFill: '#7467ab',
-    bannerFill: '#5b4f94'
+    sectorFill: '#746196',
+    bannerFill: '#5f4d80'
   },
   'proportions': {
-    sectorFill: '#978bc5',
-    bannerFill: '#7c6fb5'
+    sectorFill: '#8d7cb1',
+    bannerFill: '#77669a'
   },
   'symmetry': {
-    sectorFill: '#a397ce',
-    bannerFill: '#897cbb'
+    sectorFill: '#a89bc6',
+    bannerFill: '#9183b0'
   },
   'expression': {
-    sectorFill: '#beb7dc',
-    bannerFill: '#998ec4'
+    sectorFill: '#c4bade',
+    bannerFill: '#ab9fca'
   }
 };
 
@@ -459,18 +462,13 @@ function describeArcSector(cx, cy, rIn, rOut, startAngleDeg, endAngleDeg) {
 }
 
 /**
- * Construct an arc path for text along curved category banner
+ * Construct an arc path for text along circular curve
  */
-function describeBannerTextPath(cx, cy, r, startAngleDeg, endAngleDeg, isBottom) {
-  if (isBottom) {
-    const p1 = polarToCartesian(cx, cy, r, endAngleDeg);
-    const p2 = polarToCartesian(cx, cy, r, startAngleDeg);
-    return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${r} ${r} 0 0 0 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
-  } else {
-    const p1 = polarToCartesian(cx, cy, r, startAngleDeg);
-    const p2 = polarToCartesian(cx, cy, r, endAngleDeg);
-    return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${r} ${r} 0 0 1 ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
-  }
+function describeArcTextPath(cx, cy, r, startAngleDeg, endAngleDeg, sweepClockwise) {
+  const p1 = polarToCartesian(cx, cy, r, startAngleDeg);
+  const p2 = polarToCartesian(cx, cy, r, endAngleDeg);
+  const sweep = sweepClockwise ? 1 : 0;
+  return `M ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} A ${r} ${r} 0 0 ${sweep} ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`;
 }
 
 /**
@@ -485,90 +483,113 @@ function renderChart() {
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
   defs.innerHTML = `
     <filter id="node-shadow" x="-30%" y="-30%" width="160%" height="160%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#140d2d" flood-opacity="0.25"/>
+      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#140d2d" flood-opacity="0.3"/>
     </filter>
   `;
+
+  // Define Category Banner Text Paths along R_BANNER_MID = 265
+  // Top half: clockwise (sweep: 1), baseline inward, heads outward (upright at top)
+  // Bottom half: counter-clockwise (sweep: 0), left-to-right, baseline outward, heads inward (upright at bottom)
+  const bannerArcConfigs = [
+    { id: 'skin_quality', start: 86,   end: 4,    sweep: 1 },
+    { id: 'facial_shape', start: -86,  end: -4,   sweep: 0 },
+    { id: 'proportions',  start: -131, end: -93,  sweep: 0 },
+    { id: 'symmetry',     start: -176, end: -138, sweep: 0 },
+    { id: 'expression',   start: 176,  end: 94,   sweep: 1 }
+  ];
+
+  bannerArcConfigs.forEach(b => {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('id', `banner-path-${b.id}`);
+    p.setAttribute('d', describeArcTextPath(CX, CY, R_BANNER_MID, b.start, b.end, b.sweep === 1));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', 'none');
+    defs.appendChild(p);
+  });
+
+  // Define Parameter Label Text Paths along outer wedge perimeter R_PARAM_ARC = 227
+  const paramArcConfigs = [
+    { id: 'rad',  start: 85,   end: 50,   sweep: 1, color: '#ffffff' },
+    { id: 'fir',  start: 40,   end: 5,    sweep: 1, color: '#ffffff' },
+    { id: 'sag',  start: -40,  end: -5,   sweep: 0, color: '#ffffff' },
+    { id: 'vol',  start: -85,  end: -50,  sweep: 0, color: '#ffffff' },
+    { id: 'imb',  start: -130, end: -94,  sweep: 0, color: '#271c42' },
+    { id: 'asym', start: -175, end: -140, sweep: 0, color: '#271c42' },
+    { id: 'stat', start: 175,  end: 140,  sweep: 1, color: '#271c42' },
+    { id: 'dyn',  start: 130,  end: 95,   sweep: 1, color: '#271c42' }
+  ];
+
+  paramArcConfigs.forEach(pr => {
+    const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    p.setAttribute('id', `param-path-${pr.id}`);
+    p.setAttribute('d', describeArcTextPath(CX, CY, R_PARAM_ARC, pr.start, pr.end, pr.sweep === 1));
+    p.setAttribute('fill', 'none');
+    p.setAttribute('stroke', 'none');
+    defs.appendChild(p);
+  });
+
   svg.appendChild(defs);
 
-  // Group 1: Full Circular Background Sectors & Category Banners (360 degrees)
+  // Group 1: 5 Segmented Sectors & Category Banners with White Separator Gaps
   const sectorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   sectorGroup.setAttribute('id', 'chart-sectors');
+
+  const GAP_DEG = 3.6;
+  const HALF_GAP = GAP_DEG / 2;
 
   const sectors = [
     {
       id: 'skin_quality',
-      start: 90, end: 0,
-      rIn: R_INNER, rOut: R_BANNER_IN,
-      style: CATEGORY_STYLES['skin_quality'],
-      isBottom: false
+      start: 90 - HALF_GAP, end: 0 + HALF_GAP,
+      style: CATEGORY_STYLES['skin_quality']
     },
     {
       id: 'facial_shape',
-      start: 0, end: -90,
-      rIn: R_INNER, rOut: R_BANNER_IN,
-      style: CATEGORY_STYLES['facial_shape'],
-      isBottom: true
+      start: 0 - HALF_GAP, end: -90 + HALF_GAP,
+      style: CATEGORY_STYLES['facial_shape']
     },
     {
       id: 'proportions',
-      start: -90, end: -135,
-      rIn: R_INNER, rOut: R_BANNER_IN,
-      style: CATEGORY_STYLES['proportions'],
-      isBottom: true
+      start: -90 - HALF_GAP, end: -135 + HALF_GAP,
+      style: CATEGORY_STYLES['proportions']
     },
     {
       id: 'symmetry',
-      start: -135, end: -180,
-      rIn: R_INNER, rOut: R_BANNER_IN,
-      style: CATEGORY_STYLES['symmetry'],
-      isBottom: true
+      start: -135 - HALF_GAP, end: -180 + HALF_GAP,
+      style: CATEGORY_STYLES['symmetry']
     },
     {
       id: 'expression',
-      start: 180, end: 90,
-      rIn: R_INNER, rOut: R_BANNER_IN,
-      style: CATEGORY_STYLES['expression'],
-      isBottom: false
+      start: 180 - HALF_GAP, end: 90 + HALF_GAP,
+      style: CATEGORY_STYLES['expression']
     }
   ];
 
-  sectors.forEach((sec, idx) => {
+  sectors.forEach((sec) => {
     // 1. Sector wedge fill
     const secPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    secPath.setAttribute('d', describeArcSector(CX, CY, sec.rIn, sec.rOut, sec.start, sec.end));
+    secPath.setAttribute('d', describeArcSector(CX, CY, R_INNER, R_WEDGE_OUT, sec.start, sec.end));
     secPath.setAttribute('fill', sec.style.sectorFill);
-    secPath.setAttribute('stroke', '#ffffff');
-    secPath.setAttribute('stroke-width', '1.5');
     sectorGroup.appendChild(secPath);
 
     // 2. Outer category arc banner
     const bannerPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     bannerPath.setAttribute('d', describeArcSector(CX, CY, R_BANNER_IN, R_BANNER_OUT, sec.start, sec.end));
     bannerPath.setAttribute('fill', sec.style.bannerFill);
-    bannerPath.setAttribute('stroke', '#ffffff');
-    bannerPath.setAttribute('stroke-width', '1.5');
     sectorGroup.appendChild(bannerPath);
 
-    // 3. Curved text on banner
-    const pathId = `banner-path-${idx}`;
-    const textPathArc = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    const midR = (R_BANNER_IN + R_BANNER_OUT) / 2;
-    textPathArc.setAttribute('id', pathId);
-    textPathArc.setAttribute('d', describeBannerTextPath(CX, CY, midR, sec.start, sec.end, sec.isBottom));
-    textPathArc.setAttribute('fill', 'none');
-    textPathArc.setAttribute('stroke', 'none');
-    defs.appendChild(textPathArc);
-
+    // 3. Category banner curved text
     const bannerText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     bannerText.setAttribute('fill', '#ffffff');
-    bannerText.setAttribute('font-size', currentLanguage === 'th' ? '12.5' : '13');
+    bannerText.setAttribute('font-family', "'Plus Jakarta Sans', Kanit, sans-serif");
+    bannerText.setAttribute('font-size', currentLanguage === 'th' ? '12' : '12.5');
     bannerText.setAttribute('font-weight', '700');
     bannerText.setAttribute('letter-spacing', '0.04em');
     bannerText.setAttribute('dominant-baseline', 'central');
 
     const textPathElem = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
-    textPathElem.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#${pathId}`);
-    textPathElem.setAttribute('href', `#${pathId}`);
+    textPathElem.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#banner-path-${sec.id}`);
+    textPathElem.setAttribute('href', `#banner-path-${sec.id}`);
     textPathElem.setAttribute('startOffset', '50%');
     textPathElem.setAttribute('text-anchor', 'middle');
     textPathElem.textContent = getCategoryName(sec.id);
@@ -577,9 +598,31 @@ function renderChart() {
     sectorGroup.appendChild(bannerText);
   });
 
+  // 4. Parameter labels curved along the outer edge of each sector wedge
+  paramArcConfigs.forEach(pr => {
+    const paramText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    paramText.setAttribute('fill', pr.color);
+    paramText.setAttribute('font-family', "'Plus Jakarta Sans', Kanit, sans-serif");
+    paramText.setAttribute('font-size', currentLanguage === 'th' ? '9.6' : '10.2');
+    paramText.setAttribute('font-weight', '600');
+    paramText.setAttribute('letter-spacing', '0.02em');
+    paramText.setAttribute('dominant-baseline', 'central');
+    paramText.setAttribute('pointer-events', 'none');
+
+    const textPathElem = document.createElementNS('http://www.w3.org/2000/svg', 'textPath');
+    textPathElem.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', `#param-path-${pr.id}`);
+    textPathElem.setAttribute('href', `#param-path-${pr.id}`);
+    textPathElem.setAttribute('startOffset', '50%');
+    textPathElem.setAttribute('text-anchor', 'middle');
+    textPathElem.textContent = getParamChartLabel(pr.id);
+
+    paramText.appendChild(textPathElem);
+    sectorGroup.appendChild(paramText);
+  });
+
   svg.appendChild(sectorGroup);
 
-  // Group 2: Concentric White Dotted Grid Rings
+  // Group 2: Concentric White Dashed Grid Rings
   const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   gridGroup.setAttribute('id', 'chart-grid');
 
@@ -590,9 +633,10 @@ function renderChart() {
     ring.setAttribute('r', radius);
     ring.setAttribute('fill', 'none');
     ring.setAttribute('stroke', '#ffffff');
-    ring.setAttribute('stroke-width', '1.6');
+    ring.setAttribute('stroke-width', '1.5');
     ring.setAttribute('stroke-dasharray', '3.5 3.5');
-    ring.setAttribute('opacity', '0.75');
+    ring.setAttribute('opacity', '0.82');
+    ring.setAttribute('pointer-events', 'none');
     gridGroup.appendChild(ring);
   });
   svg.appendChild(gridGroup);
@@ -603,17 +647,54 @@ function renderChart() {
   centerHub.setAttribute('cy', CY);
   centerHub.setAttribute('r', R_INNER);
   centerHub.setAttribute('fill', '#ffffff');
-  centerHub.setAttribute('stroke', '#ebe6f6');
-  centerHub.setAttribute('stroke-width', '2');
+  centerHub.setAttribute('stroke', 'none');
+  centerHub.setAttribute('pointer-events', 'none');
   svg.appendChild(centerHub);
 
-  // Group 4: Parameter Spokes, Arrowheads, and Spoke Labels
+  // Group 4: Axis Scale Numbers (0, 1, 2, 3) in White Channel Gaps
+  const scalesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  scalesGroup.setAttribute('id', 'chart-axis-scales');
+
+  const axisScales = [
+    { angle: 90,   align: 'vertical' },   // Top
+    { angle: 0,    align: 'horizontal' }, // Right
+    { angle: -90,  align: 'vertical' },   // Bottom
+    { angle: -135, align: 'diagonal' },   // Bottom-Left
+    { angle: 180,  align: 'horizontal' }  // Left
+  ];
+
+  axisScales.forEach(axis => {
+    [0, 1, 2, 3].forEach(lvl => {
+      let r = lvl === 0 ? 53 : (lvl === 1 ? R_LEVEL_1 : (lvl === 2 ? R_LEVEL_2 : R_LEVEL_3));
+      const pt = polarToCartesian(CX, CY, r, axis.angle);
+      const scaleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      scaleText.setAttribute('x', pt.x.toFixed(1));
+      scaleText.setAttribute('y', pt.y.toFixed(1));
+      scaleText.setAttribute('font-family', "'Plus Jakarta Sans', Kanit, sans-serif");
+      scaleText.setAttribute('font-size', lvl === 0 ? '12.5' : '13.5');
+      scaleText.setAttribute('font-weight', '700');
+      scaleText.setAttribute('fill', '#1c1533');
+      scaleText.setAttribute('text-anchor', 'middle');
+      scaleText.setAttribute('dominant-baseline', 'central');
+      scaleText.setAttribute('pointer-events', 'none');
+
+      if (axis.align === 'diagonal') {
+        scaleText.setAttribute('transform', `rotate(45, ${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
+      }
+
+      scaleText.textContent = String(lvl);
+      scalesGroup.appendChild(scaleText);
+    });
+  });
+  svg.appendChild(scalesGroup);
+
+  // Group 5: Parameter Spokes & Outer Arrowheads
   const spokesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   spokesGroup.setAttribute('id', 'chart-spokes');
 
   currentData.forEach(item => {
     const pInner = polarToCartesian(CX, CY, R_INNER, item.angleDeg);
-    const pEnd = polarToCartesian(CX, CY, R_SPOKE_END, item.angleDeg);
+    const pEnd = polarToCartesian(CX, CY, R_SPOKE_ARROW - 7, item.angleDeg);
 
     // Spoke line
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -623,15 +704,16 @@ function renderChart() {
     line.setAttribute('y2', pEnd.y.toFixed(1));
     line.setAttribute('stroke', '#ffffff');
     line.setAttribute('stroke-width', '1.8');
-    line.setAttribute('opacity', '0.9');
+    line.setAttribute('opacity', '0.92');
+    line.setAttribute('pointer-events', 'none');
     spokesGroup.appendChild(line);
 
-    // Arrowhead at outer rim
-    const arrowTip = polarToCartesian(CX, CY, R_SPOKE_END + 5, item.angleDeg);
+    // Arrowhead at outer spoke rim
+    const arrowTip = polarToCartesian(CX, CY, R_SPOKE_ARROW, item.angleDeg);
     const rad = (item.angleDeg * Math.PI) / 180;
     const perpRad = rad + Math.PI / 2;
-    const wingLen = 4.5;
-    const arrowBack = 8.5;
+    const wingLen = 4.2;
+    const arrowBack = 8.0;
     const pBase = {
       x: arrowTip.x - arrowBack * Math.cos(rad),
       y: arrowTip.y + arrowBack * Math.sin(rad)
@@ -648,40 +730,12 @@ function renderChart() {
     const arrowPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
     arrowPoly.setAttribute('points', `${arrowTip.x.toFixed(1)},${arrowTip.y.toFixed(1)} ${w1.x.toFixed(1)},${w1.y.toFixed(1)} ${w2.x.toFixed(1)},${w2.y.toFixed(1)}`);
     arrowPoly.setAttribute('fill', '#ffffff');
+    arrowPoly.setAttribute('pointer-events', 'none');
     spokesGroup.appendChild(arrowPoly);
-
-    // Parameter label along spoke line
-    const labelRad = (R_LEVEL_2 + R_LEVEL_3) / 2;
-    const pLabel = polarToCartesian(CX, CY, labelRad, item.angleDeg);
-    const labelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-
-    let rotDeg = -item.angleDeg;
-    let anchor = 'middle';
-    let offsetY = -12;
-
-    if (item.angleDeg > 90 || item.angleDeg < -90) {
-      rotDeg += 180;
-      offsetY = 14;
-    }
-
-    labelText.setAttribute('x', pLabel.x.toFixed(1));
-    labelText.setAttribute('y', pLabel.y.toFixed(1));
-    labelText.setAttribute('transform', `rotate(${rotDeg}, ${pLabel.x.toFixed(1)}, ${pLabel.y.toFixed(1)}) translate(0, ${offsetY})`);
-    labelText.setAttribute('fill', '#ffffff');
-    labelText.setAttribute('font-size', currentLanguage === 'th' ? '10' : '10.5');
-    labelText.setAttribute('font-weight', '700');
-    labelText.setAttribute('text-anchor', anchor);
-    labelText.setAttribute('letter-spacing', '0.02em');
-    labelText.setAttribute('stroke', '#352b57');
-    labelText.setAttribute('stroke-width', '2.5');
-    labelText.setAttribute('paint-order', 'stroke fill');
-    labelText.setAttribute('pointer-events', 'none');
-    labelText.textContent = getParamChartLabel(item.id);
-    spokesGroup.appendChild(labelText);
   });
   svg.appendChild(spokesGroup);
 
-  // Group 5: Interactive Spoke Ring Nodes (0, 1, 2, 3)
+  // Group 6: Interactive Spoke Ring Nodes (0, 1, 2, 3)
   const nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   nodesGroup.setAttribute('id', 'chart-nodes');
 
@@ -704,10 +758,19 @@ function renderChart() {
       const nodeCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
       nodeCircle.setAttribute('cx', pos.x.toFixed(1));
       nodeCircle.setAttribute('cy', pos.y.toFixed(1));
-      nodeCircle.setAttribute('r', '5.5');
-      nodeCircle.setAttribute('fill', '#ffffff');
-      nodeCircle.setAttribute('stroke', '#6b5da5');
-      nodeCircle.setAttribute('stroke-width', '1.3');
+
+      if (level === 0) {
+        nodeCircle.setAttribute('r', '4.8');
+        nodeCircle.setAttribute('fill', '#ffffff');
+        nodeCircle.setAttribute('stroke', '#a295c2');
+        nodeCircle.setAttribute('stroke-width', '1.3');
+      } else {
+        nodeCircle.setAttribute('r', '5.8');
+        nodeCircle.setAttribute('fill', 'rgba(255, 255, 255, 0.22)');
+        nodeCircle.setAttribute('stroke', '#ffffff');
+        nodeCircle.setAttribute('stroke-width', '1.8');
+      }
+
       nodeCircle.setAttribute('class', 'svg-spoke-node');
       nodeCircle.setAttribute('cursor', 'pointer');
 
@@ -731,40 +794,53 @@ function renderChart() {
   });
   svg.appendChild(nodesGroup);
 
-  // Group 6: Comparison Baseline Polygon Overlay (Optional)
-  if (showComparison) {
-    const compGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-    compGroup.setAttribute('id', 'chart-comparison-overlay');
+  // Group 7: Reference Baseline Dots matching published clinical figure
+  const baselineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  baselineGroup.setAttribute('id', 'chart-baseline-reference');
 
-    const compPts = baselineComparisonData.map(c => {
-      const item = currentData.find(d => d.id === c.id);
-      const r = getRadiusForScore(c.score);
-      return polarToCartesian(CX, CY, r, item ? item.angleDeg : 0);
-    });
+  const referenceDots = [
+    { id: 'dyn', level: 2 },
+    { id: 'asym', level: 2 },
+    { id: 'imb', level: 2 },
+    { id: 'vol', level: 2 }
+  ];
 
-    const compPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
-    compPoly.setAttribute('points', compPts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '));
-    compPoly.setAttribute('fill', 'rgba(215, 60, 60, 0.12)');
-    compPoly.setAttribute('stroke', '#d32f2f');
-    compPoly.setAttribute('stroke-width', '2.2');
-    compPoly.setAttribute('stroke-dasharray', '5 3.5');
-    compGroup.appendChild(compPoly);
+  referenceDots.forEach(ref => {
+    const item = currentData.find(d => d.id === ref.id);
+    if (!item) return;
+    if (item.score !== ref.level) {
+      const r = getRadiusForScore(ref.level);
+      const pos = polarToCartesian(CX, CY, r, item.angleDeg);
+      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      dot.setAttribute('cx', pos.x.toFixed(1));
+      dot.setAttribute('cy', pos.y.toFixed(1));
+      dot.setAttribute('r', '5.8');
+      dot.setAttribute('fill', '#75639e');
+      dot.setAttribute('stroke', '#ffffff');
+      dot.setAttribute('stroke-width', '1.6');
+      dot.setAttribute('opacity', '0.9');
+      dot.setAttribute('pointer-events', 'none');
+      baselineGroup.appendChild(dot);
+    }
+  });
 
-    compPts.forEach(p => {
-      const cDot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      cDot.setAttribute('cx', p.x.toFixed(1));
-      cDot.setAttribute('cy', p.y.toFixed(1));
-      cDot.setAttribute('r', '4');
-      cDot.setAttribute('fill', '#d32f2f');
-      cDot.setAttribute('stroke', '#ffffff');
-      cDot.setAttribute('stroke-width', '1.5');
-      compGroup.appendChild(cDot);
-    });
-
-    svg.appendChild(compGroup);
+  // Ring 3 on 'rad' has reference white outline circle
+  const radItem = currentData.find(d => d.id === 'rad');
+  if (radItem && radItem.score !== 3) {
+    const posRad = polarToCartesian(CX, CY, R_LEVEL_3, radItem.angleDeg);
+    const ringRad = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    ringRad.setAttribute('cx', posRad.x.toFixed(1));
+    ringRad.setAttribute('cy', posRad.y.toFixed(1));
+    ringRad.setAttribute('r', '6.0');
+    ringRad.setAttribute('fill', 'none');
+    ringRad.setAttribute('stroke', '#ffffff');
+    ringRad.setAttribute('stroke-width', '2.0');
+    ringRad.setAttribute('pointer-events', 'none');
+    baselineGroup.appendChild(ringRad);
   }
+  svg.appendChild(baselineGroup);
 
-  // Group 7: Main Assessment Score Polygon & Dark Filled Points
+  // Group 8: Main Assessment Score Polygon & Dark Filled Points
   const polygonGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   polygonGroup.setAttribute('id', 'chart-assessment-polygon');
 
@@ -776,8 +852,8 @@ function renderChart() {
   // Solid dark polygon line connecting evaluated scores
   const polygonLine = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
   polygonLine.setAttribute('points', activePoints.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '));
-  polygonLine.setAttribute('fill', 'rgba(17, 13, 36, 0.08)');
-  polygonLine.setAttribute('stroke', '#110d24');
+  polygonLine.setAttribute('fill', 'rgba(0, 0, 0, 0.02)');
+  polygonLine.setAttribute('stroke', '#000000');
   polygonLine.setAttribute('stroke-width', '2.8');
   polygonLine.setAttribute('stroke-linejoin', 'round');
   polygonGroup.appendChild(polygonLine);
@@ -788,10 +864,10 @@ function renderChart() {
     const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     dot.setAttribute('cx', pt.x.toFixed(1));
     dot.setAttribute('cy', pt.y.toFixed(1));
-    dot.setAttribute('r', '6.8');
-    dot.setAttribute('fill', '#110d24');
+    dot.setAttribute('r', '7.0');
+    dot.setAttribute('fill', '#000000');
     dot.setAttribute('stroke', '#ffffff');
-    dot.setAttribute('stroke-width', '2');
+    dot.setAttribute('stroke-width', '2.0');
     dot.setAttribute('filter', 'url(#node-shadow)');
     dot.setAttribute('class', 'svg-data-point');
     dot.setAttribute('cursor', 'pointer');
