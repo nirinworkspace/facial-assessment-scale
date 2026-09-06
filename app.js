@@ -1147,7 +1147,6 @@ function generateA5SheetHtml() {
       </div>
       <div class="meta-right">
         <span class="badge-stage">${sessionStage}</span>
-        <div class="paper-spec">A5 Paper Scale (148 &times; 210 mm)</div>
       </div>
     </header>
 
@@ -1168,17 +1167,6 @@ function generateA5SheetHtml() {
       <div class="meta-item">
         <span class="meta-label">${escapeHtml(t('statTotalLabel'))}</span>
         <span class="meta-val"><span class="total-badge-inline">${totalScore} / 24</span> (${levelText})</span>
-      </div>
-    </div>
-
-    <!-- Severity Evaluation Scale Guide -->
-    <div class="scale-legend-bar">
-      <span class="scale-legend-title">${escapeHtml(t('legendCaption'))}</span>
-      <div class="scale-steps">
-        <div class="scale-step"><span class="step-dot dot-0"></span> ${escapeHtml(t('sev0')).replace(/<[^>]+>/g, '')}</div>
-        <div class="scale-step"><span class="step-dot dot-1"></span> ${escapeHtml(t('sev1')).replace(/<[^>]+>/g, '')}</div>
-        <div class="scale-step"><span class="step-dot dot-2"></span> ${escapeHtml(t('sev2')).replace(/<[^>]+>/g, '')}</div>
-        <div class="scale-step"><span class="step-dot dot-3"></span> ${escapeHtml(t('sev3')).replace(/<[^>]+>/g, '')}</div>
       </div>
     </div>
 
