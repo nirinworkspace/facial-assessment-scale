@@ -124,7 +124,7 @@ const TRANSLATIONS = {
     exportPng: 'Export Chart as PNG (High-Res)',
     exportSvg: 'Export Chart as SVG',
     printReport: 'Print Clinical Report (PDF)',
-    exportTableA5: 'Export Assessment Parameters & Scoring (A5 Paper)',
+    exportTableA5: 'Print Assessment Parameters & Scoring (A5 Paper)',
     exportJson: 'Download Assessment Data (JSON)',
     a5DocSubtitle: 'Clinical Assessment Parameters & Scoring Scale',
     a5ScoreSummary: 'Score Breakdown',
