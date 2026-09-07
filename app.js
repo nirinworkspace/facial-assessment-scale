@@ -651,44 +651,7 @@ function renderChart() {
   centerHub.setAttribute('pointer-events', 'none');
   svg.appendChild(centerHub);
 
-  // Group 4: Axis Scale Numbers (0, 1, 2, 3) in White Channel Gaps
-  const scalesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  scalesGroup.setAttribute('id', 'chart-axis-scales');
-
-  const axisScales = [
-    { angle: 90,   align: 'vertical' },   // Top
-    { angle: 0,    align: 'horizontal' }, // Right
-    { angle: -90,  align: 'vertical' },   // Bottom
-    { angle: -135, align: 'diagonal' },   // Bottom-Left
-    { angle: 180,  align: 'horizontal' }  // Left
-  ];
-
-  axisScales.forEach(axis => {
-    [0, 1, 2, 3].forEach(lvl => {
-      let r = lvl === 0 ? 53 : (lvl === 1 ? R_LEVEL_1 : (lvl === 2 ? R_LEVEL_2 : R_LEVEL_3));
-      const pt = polarToCartesian(CX, CY, r, axis.angle);
-      const scaleText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      scaleText.setAttribute('x', pt.x.toFixed(1));
-      scaleText.setAttribute('y', pt.y.toFixed(1));
-      scaleText.setAttribute('font-family', "'Plus Jakarta Sans', Kanit, sans-serif");
-      scaleText.setAttribute('font-size', lvl === 0 ? '12.5' : '13.5');
-      scaleText.setAttribute('font-weight', '700');
-      scaleText.setAttribute('fill', '#1c1533');
-      scaleText.setAttribute('text-anchor', 'middle');
-      scaleText.setAttribute('dominant-baseline', 'central');
-      scaleText.setAttribute('pointer-events', 'none');
-
-      if (axis.align === 'diagonal') {
-        scaleText.setAttribute('transform', `rotate(45, ${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`);
-      }
-
-      scaleText.textContent = String(lvl);
-      scalesGroup.appendChild(scaleText);
-    });
-  });
-  svg.appendChild(scalesGroup);
-
-  // Group 5: Parameter Spokes & Outer Arrowheads
+  // Group 4: Parameter Spokes & Outer Arrowheads
   const spokesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   spokesGroup.setAttribute('id', 'chart-spokes');
 
@@ -735,7 +698,7 @@ function renderChart() {
   });
   svg.appendChild(spokesGroup);
 
-  // Group 6: Interactive Spoke Ring Nodes (0, 1, 2, 3)
+  // Group 5: Interactive Spoke Ring Nodes (0, 1, 2, 3)
   const nodesGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   nodesGroup.setAttribute('id', 'chart-nodes');
 
@@ -794,7 +757,7 @@ function renderChart() {
   });
   svg.appendChild(nodesGroup);
 
-  // Group 7: Reference Baseline Dots matching published clinical figure
+  // Group 6: Reference Baseline Dots matching published clinical figure
   const baselineGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   baselineGroup.setAttribute('id', 'chart-baseline-reference');
 
@@ -840,7 +803,7 @@ function renderChart() {
   }
   svg.appendChild(baselineGroup);
 
-  // Group 8: Main Assessment Score Polygon & Dark Filled Points
+  // Group 7: Main Assessment Score Polygon & Dark Filled Points
   const polygonGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   polygonGroup.setAttribute('id', 'chart-assessment-polygon');
 
