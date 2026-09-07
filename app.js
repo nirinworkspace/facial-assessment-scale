@@ -394,9 +394,9 @@ const R_LEVEL_3 = 198;     // Level 3 (Severe)
 const R_SPOKE_ARROW = 216; // Outer spoke arrow tip
 const R_PARAM_ARC = 227;   // Arc radius for parameter text inside wedge
 const R_WEDGE_OUT = 240;   // Outer radius of inner colored wedge
-const R_BANNER_IN = 248;   // Inner radius of category banner arc
-const R_BANNER_OUT = 282;  // Outer radius of category banner arc
-const R_BANNER_MID = 265;  // Midline radius for category banner text
+const R_BANNER_IN = 240;   // Inner radius of category banner arc (flush with wedge, no space)
+const R_BANNER_OUT = 280;  // Outer radius of category banner arc
+const R_BANNER_MID = 260;  // Midline radius for category banner text
 
 // Authentic Sector & Banner Colors matching clinical reference picture
 const CATEGORY_STYLES = {
@@ -487,15 +487,15 @@ function renderChart() {
     </filter>
   `;
 
-  // Define Category Banner Text Paths along R_BANNER_MID = 265
+  // Define Category Banner Text Paths along R_BANNER_MID = 260
   // Top half: clockwise (sweep: 1), baseline inward, heads outward (upright at top)
   // Bottom half: counter-clockwise (sweep: 0), left-to-right, baseline outward, heads inward (upright at bottom)
   const bannerArcConfigs = [
-    { id: 'skin_quality', start: 86,   end: 4,    sweep: 1 },
-    { id: 'facial_shape', start: -86,  end: -4,   sweep: 0 },
-    { id: 'proportions',  start: -131, end: -93,  sweep: 0 },
-    { id: 'symmetry',     start: -176, end: -138, sweep: 0 },
-    { id: 'expression',   start: 176,  end: 94,   sweep: 1 }
+    { id: 'skin_quality', start: 90,   end: 0,    sweep: 1 },
+    { id: 'facial_shape', start: -90,  end: 0,    sweep: 0 },
+    { id: 'proportions',  start: -135, end: -90,  sweep: 0 },
+    { id: 'symmetry',     start: -180, end: -135, sweep: 0 },
+    { id: 'expression',   start: 180,  end: 90,   sweep: 1 }
   ];
 
   bannerArcConfigs.forEach(b => {
@@ -509,14 +509,14 @@ function renderChart() {
 
   // Define Parameter Label Text Paths along outer wedge perimeter R_PARAM_ARC = 227
   const paramArcConfigs = [
-    { id: 'rad',  start: 85,   end: 50,   sweep: 1, color: '#ffffff' },
-    { id: 'fir',  start: 40,   end: 5,    sweep: 1, color: '#ffffff' },
-    { id: 'sag',  start: -40,  end: -5,   sweep: 0, color: '#ffffff' },
-    { id: 'vol',  start: -85,  end: -50,  sweep: 0, color: '#ffffff' },
-    { id: 'imb',  start: -130, end: -94,  sweep: 0, color: '#271c42' },
-    { id: 'asym', start: -175, end: -140, sweep: 0, color: '#271c42' },
-    { id: 'stat', start: 175,  end: 140,  sweep: 1, color: '#271c42' },
-    { id: 'dyn',  start: 130,  end: 95,   sweep: 1, color: '#271c42' }
+    { id: 'rad',  start: 86,   end: 49,   sweep: 1, color: '#ffffff' },
+    { id: 'fir',  start: 41,   end: 4,    sweep: 1, color: '#ffffff' },
+    { id: 'sag',  start: -41,  end: -4,   sweep: 0, color: '#ffffff' },
+    { id: 'vol',  start: -86,  end: -49,  sweep: 0, color: '#ffffff' },
+    { id: 'imb',  start: -131, end: -94,  sweep: 0, color: '#271c42' },
+    { id: 'asym', start: -176, end: -139, sweep: 0, color: '#271c42' },
+    { id: 'stat', start: 176,  end: 139,  sweep: 1, color: '#271c42' },
+    { id: 'dyn',  start: 131,  end: 94,   sweep: 1, color: '#271c42' }
   ];
 
   paramArcConfigs.forEach(pr => {
@@ -530,37 +530,34 @@ function renderChart() {
 
   svg.appendChild(defs);
 
-  // Group 1: 5 Segmented Sectors & Category Banners with White Separator Gaps
+  // Group 1: 5 Continuous Background Sectors & Category Banners (No Gaps)
   const sectorGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   sectorGroup.setAttribute('id', 'chart-sectors');
-
-  const GAP_DEG = 3.6;
-  const HALF_GAP = GAP_DEG / 2;
 
   const sectors = [
     {
       id: 'skin_quality',
-      start: 90 - HALF_GAP, end: 0 + HALF_GAP,
+      start: 90, end: 0,
       style: CATEGORY_STYLES['skin_quality']
     },
     {
       id: 'facial_shape',
-      start: 0 - HALF_GAP, end: -90 + HALF_GAP,
+      start: 0, end: -90,
       style: CATEGORY_STYLES['facial_shape']
     },
     {
       id: 'proportions',
-      start: -90 - HALF_GAP, end: -135 + HALF_GAP,
+      start: -90, end: -135,
       style: CATEGORY_STYLES['proportions']
     },
     {
       id: 'symmetry',
-      start: -135 - HALF_GAP, end: -180 + HALF_GAP,
+      start: -135, end: -180,
       style: CATEGORY_STYLES['symmetry']
     },
     {
       id: 'expression',
-      start: 180 - HALF_GAP, end: 90 + HALF_GAP,
+      start: 180, end: 90,
       style: CATEGORY_STYLES['expression']
     }
   ];
