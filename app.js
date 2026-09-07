@@ -6,13 +6,13 @@
 // Language State
 let currentLanguage = localStorage.getItem('facial_scale_lang') || 'th';
 
-// Initial Data Model matching reference clinical configuration
+// Initial Data Model starting at Severity Level 0
 const DEFAULT_ASSESSMENT_DATA = [
   {
     id: 'rad',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 1, // Matches clinical scale reference image
+    score: 0,
     angleDeg: 67.5,
     notes: {
       en: '',
@@ -23,7 +23,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'fir',
     category: 'Skin quality',
     sectorId: 'skin_quality',
-    score: 2,
+    score: 0,
     angleDeg: 22.5,
     notes: {
       en: '',
@@ -34,7 +34,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'sag',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 2,
+    score: 0,
     angleDeg: -22.5,
     notes: {
       en: '',
@@ -45,7 +45,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'vol',
     category: 'Facial shape',
     sectorId: 'facial_shape',
-    score: 1,
+    score: 0,
     angleDeg: -67.5,
     notes: {
       en: '',
@@ -56,7 +56,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'imb',
     category: 'Proportions',
     sectorId: 'proportions',
-    score: 1,
+    score: 0,
     angleDeg: -112.5,
     notes: {
       en: '',
@@ -67,7 +67,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'asym',
     category: 'Symmetry',
     sectorId: 'symmetry',
-    score: 1,
+    score: 0,
     angleDeg: -157.5,
     notes: {
       en: '',
@@ -78,7 +78,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'stat',
     category: 'Expression',
     sectorId: 'expression',
-    score: 2,
+    score: 0,
     angleDeg: 157.5,
     notes: {
       en: '',
@@ -89,7 +89,7 @@ const DEFAULT_ASSESSMENT_DATA = [
     id: 'dyn',
     category: 'Expression',
     sectorId: 'expression',
-    score: 1,
+    score: 0,
     angleDeg: 112.5,
     notes: {
       en: '',
