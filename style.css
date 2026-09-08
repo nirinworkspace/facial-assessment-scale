@@ -409,19 +409,24 @@ html[lang="th"] .main-title {
 .chart-panel {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .chart-canvas-container {
-  padding: 12px 16px 4px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 8px;
   background: #ffffff;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 #facial-scale-svg {
+  display: block;
+  width: 100%;
   max-width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
   user-select: none;
 }
 
